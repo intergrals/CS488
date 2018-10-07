@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/A1.dir/A1.cpp.o CMakeFiles/A1.dir/Main.cpp.o CMakeFiles/A1.dir/maze.cpp.o  -o ../A1  -L/u3/hlpan/cs488/A1/../lib -Wl,-rpath,/u3/hlpan/cs488/A1/../lib -lcs488-framework -limgui -lglfw3 -lGL -lXinerama -lXcursor -lXxf86vm -lXi -lXrandr -lX11 -lstdc++ -ldl -lpthread 
