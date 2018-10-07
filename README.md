@@ -49,4 +49,4 @@ Sorry for all of the hardcore Microsoft fans out there.  We have not had time to
 
     $ premake4 vs2013
 
- This should point you in the general direction.
+ This should point you in the general direction.#CS488 Assignments
