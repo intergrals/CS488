@@ -65,9 +65,9 @@ void A2::init()
     F_v = glm::mat3(1.0f);
     MT = glm::mat4(1.0f);
 
-    scale_factors[0] = 1.0f;
-    scale_factors[1] = 1.0f;
-    scale_factors[2] = 1.0f;
+    scale_factors[0] = 0.8f;
+    scale_factors[1] = 0.8f;
+    scale_factors[2] = 0.8f;
     
 
     glm::mat4 rM(1.0f);
@@ -78,6 +78,7 @@ void A2::init()
 	rM[2][2] = cos( glm::radians(10.0f) );
 
     MT = rM * MT;
+    wMT = glm::mat4(1.0f);
 
     mode = R;
     mL = false;
@@ -244,10 +245,10 @@ void A2::drawOctahedron() {
 
 	// apply transformations
 	for( int i = 0; i < 6; i++ ) {
-		v[i] = MT * MS * v[i];
-		if ( i < 3 ) a[i] = MT * a[i];
+		v[i] = wMT * MT * MS * v[i];
+		if ( i < 3 ) a[i] = wMT * MT * a[i];
 	}
-	o = MT * o;
+	o = wMT * MT * o;
 
 	// vertices in 2d
 	glm::vec2 v2[6];
@@ -266,6 +267,17 @@ void A2::drawOctahedron() {
 	glm::vec2 o2 = vec2( o.x, o.y );
 
     // draw
+
+    // draw local axis
+    setLineColour( vec3(1.0f, 0.5f, 0.0f) );
+    drawLine( o2, a2[0] );
+    setLineColour( vec3(0.0f, 1.0f, 0.5f) );
+    drawLine( o2, a2[1] );
+    setLineColour( vec3(0.5f, 0.0f, 1.0f) );
+    drawLine( o2, a2[2] );
+
+    // draw shape
+    setLineColour( vec3(0.0f, 0.0f, 0.0f) );
     drawLine( v2[0], v2[2] );
     drawLine( v2[0], v2[3] );
     drawLine( v2[0], v2[4] );
@@ -278,11 +290,6 @@ void A2::drawOctahedron() {
     drawLine( v2[2], v2[5] );
     drawLine( v2[3], v2[4] );
     drawLine( v2[3], v2[5] );
-
-    drawLine( o2, a2[0] );
-	drawLine( o2, a2[1] );
-	drawLine( o2, a2[2] );
-
 
 }
 
@@ -314,8 +321,33 @@ void A2::appLogic()
 	drawLine(vec2(-0.25f, 0.25f), vec2(-0.25f, -0.25f));
     */
 
-	// Draw octahedron
+	// Draw world axis
+    glm::vec4 a[3];
+    a[0] = glm::vec4( glm::vec3( 0.1f, 0.0f, 0.0f ), 1 );
+    a[1] = glm::vec4( glm::vec3( 0.0f, 0.1f, 0.0f ), 1 );
+    a[2] = glm::vec4( glm::vec3( 0.0f, 0.0f, 0.1f ), 1 );
+    // Origin
+    glm::vec4 Ow( 0.0f, 0.0f, 0.0f, 1.0f );
+
+    // Apply transformations and change to 2d points
+    glm::vec2 a2[3];
+    for( int i = 0; i < 3; i++ ) {
+        a[i] = wMT * a[i];
+        a2[i] = vec2( a[i].x, a[i].y );
+    }
+    Ow = wMT * Ow;
+    glm::vec2 Ow2 = glm::vec2( Ow.x, Ow.y );
+
+    // Draw world axis
     setLineColour( vec3(1.0f, 0.0f, 0.0f) );
+    drawLine( Ow2, a2[0] );
+    setLineColour( vec3(0.0f, 1.0f, 0.0f) );
+    drawLine( Ow2, a2[1] );
+    setLineColour( vec3(0.0f, 0.0f, 1.0f) );
+    drawLine( Ow2, a2[2] );
+
+
+	// Draw octahedron
     drawOctahedron();
 }
 
@@ -453,8 +485,9 @@ bool A2::mouseMoveEvent (
 		double yPos
 ) {
 	bool eventHandled(false);
+    (void) yPos;
 
-    double dist = lastX - xPos;
+    double dist = xPos - lastX;
 
 	if( mode == R ) {
 
@@ -491,19 +524,83 @@ bool A2::mouseMoveEvent (
 	    // TODO: same thing
 	    double scale_amt = dist / 768; 
 
-	    if( mL && scale_factors[0] //TODO ) {
+	    if( mL && ( scale_factors[0] > 0.05f || scale_amt > 0.0f ) ) {
 	        scale_factors[0] += scale_amt;
-	        if( scale_factors[0] < 0.05f ) scale_factors[0] = 0.1f;
+	        //if( scale_factors[0] < 0.05f ) scale_factors[0] = 0.1f;
+	    }
+	    if( mM && ( scale_factors[1] > 0.05f || scale_amt > 0.0f ) ) {
+	        scale_factors[1] += scale_amt;
+            //if( scale_factors[1] < 0.05f ) scale_factors[1] = 0.1f;
+	    }
+        if( mR && ( scale_factors[2] > 0.05f || scale_amt > 0.0f ) ) {
+            scale_factors[2] += scale_amt;
+            //if( scale_factors[2] < 0.05f ) scale_factors[2] = 0.1f;
+        }
+	} else if( mode == T ) {
+	    float dist_move = (float) dist / 768;
+
+	    glm::mat4 MTr(1.0f);
+	    if( mL ) {
+	        glm::mat4 lMTr(1.0f);
+	        MTr[3][0] = dist_move;
 	    }
 	    if( mM ) {
-	        scale_factors[1] += scale_amt;
-            if( scale_factors[0] < 0.05f ) scale_factors[1] = 0.1f;
+            glm::mat4 mMTr(1.0f);
+            MTr[3][1] = dist_move;
 	    }
         if( mR ) {
-            scale_factors[2] += scale_amt;
-            if( scale_factors[0] < 0.05f ) scale_factors[2] = 0.1f;
+            glm::mat4 rMTr(1.0f);
+            MTr[3][2] = dist_move;
+        }
+        MT = MT * MTr;
+	} else if( mode == E ) {
+        float dist_move = (float) dist / 768;
+
+        glm::mat4 wMTr(1.0f);
+        if( mL ) {
+            glm::mat4 lMTr(1.0f);
+            wMTr[3][0] = dist_move;
+        }
+        if( mM ) {
+            glm::mat4 mMTr(1.0f);
+            wMTr[3][1] = dist_move;
+        }
+        if( mR ) {
+            glm::mat4 rMTr(1.0f);
+            wMTr[3][2] = dist_move;
+        }
+        wMT = wMT * wMTr;
+	} else if( mode == O ) {
+        double rotation_amt = 360 * dist / 768;
+        auto angle = (float) radians( rotation_amt );
+
+        // Make transformation matrix depending on which mouse button is down.
+        if( mL ) {
+            glm::mat4 rML(1.0f);
+            rML[1][1] = cos( angle );
+            rML[2][1] = -sin( angle );
+            rML[1][2] = sin( angle );
+            rML[2][2] = cos( angle );
+            wMT = wMT * rML;
+        }
+        if( mM ) {
+            glm::mat4 rMM(1.0f);
+            rMM[0][0] = cos( angle );
+            rMM[0][2] = -sin( angle );
+            rMM[2][0] = sin( angle );
+            rMM[2][2] = cos( angle );
+            wMT = wMT * rMM;
+        }
+        if( mR ) {
+            glm::mat4 rMR(1.0f);
+            rMR[0][0] = cos( angle );
+            rMR[1][0] = -sin( angle );
+            rMR[0][1] = sin( angle );
+            rMR[1][1] = cos( angle );
+            wMT = wMT * rMR;
         }
 	}
+
 
 	lastX = xPos;
 

@@ -64,9 +64,9 @@ ifeq ($(config),release)
 endif
 
 OBJECTS := \
+	$(OBJDIR)/Main.o \
 	$(OBJDIR)/maze.o \
 	$(OBJDIR)/A1.o \
-	$(OBJDIR)/Main.o \
 
 RESOURCES := \
 
@@ -127,13 +127,13 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 endif
 
+$(OBJDIR)/Main.o: ../Main.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/maze.o: ../maze.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/A1.o: ../A1.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/Main.o: ../Main.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 

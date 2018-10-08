@@ -100,6 +100,7 @@ CMakeFiles/A1.dir/A1.cpp.o: ../../shared/include/glm/vector_relational.hpp
 CMakeFiles/A1.dir/A1.cpp.o: ../A1.cpp
 CMakeFiles/A1.dir/A1.cpp.o: ../A1.hpp
 CMakeFiles/A1.dir/A1.cpp.o: ../maze.hpp
+CMakeFiles/A1.dir/A1.cpp.o: ../stb_image.h
 
 CMakeFiles/A1.dir/Main.cpp.o: ../../shared/cs488-framework/CS488Window.hpp
 CMakeFiles/A1.dir/Main.cpp.o: ../../shared/cs488-framework/OpenGLImport.hpp

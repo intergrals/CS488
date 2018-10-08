@@ -98,9 +98,10 @@ CMakeFiles/A1.dir/A1.cpp.o
  ../../shared/include/glm/vec3.hpp
  ../../shared/include/glm/vec4.hpp
  ../../shared/include/glm/vector_relational.hpp
- /u3/hlpan/cs488/A1/A1.cpp
- /u3/hlpan/cs488/A1/A1.hpp
- /u3/hlpan/cs488/A1/maze.hpp
+ /home/leo/Documents/CS488/A1/A1.cpp
+ /home/leo/Documents/CS488/A1/A1.hpp
+ /home/leo/Documents/CS488/A1/maze.hpp
+ /home/leo/Documents/CS488/A1/stb_image.h
 CMakeFiles/A1.dir/Main.cpp.o
  ../../shared/cs488-framework/CS488Window.hpp
  ../../shared/cs488-framework/OpenGLImport.hpp
@@ -187,9 +188,9 @@ CMakeFiles/A1.dir/Main.cpp.o
  ../../shared/include/glm/vec3.hpp
  ../../shared/include/glm/vec4.hpp
  ../../shared/include/glm/vector_relational.hpp
- /u3/hlpan/cs488/A1/A1.hpp
- /u3/hlpan/cs488/A1/Main.cpp
- /u3/hlpan/cs488/A1/maze.hpp
+ /home/leo/Documents/CS488/A1/A1.hpp
+ /home/leo/Documents/CS488/A1/Main.cpp
+ /home/leo/Documents/CS488/A1/maze.hpp
 CMakeFiles/A1.dir/maze.cpp.o
- /u3/hlpan/cs488/A1/maze.cpp
- /u3/hlpan/cs488/A1/maze.hpp
+ /home/leo/Documents/CS488/A1/maze.cpp
+ /home/leo/Documents/CS488/A1/maze.hpp

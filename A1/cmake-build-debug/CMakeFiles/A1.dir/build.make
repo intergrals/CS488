@@ -34,19 +34,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /tmp/mozilla_hlpan0/clion-2018.2.3/bin/cmake/linux/bin/cmake
+CMAKE_COMMAND = /opt/clion-2018.2.4/bin/cmake/linux/bin/cmake
 
 # The command to remove a file.
-RM = /tmp/mozilla_hlpan0/clion-2018.2.3/bin/cmake/linux/bin/cmake -E remove -f
+RM = /opt/clion-2018.2.4/bin/cmake/linux/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /u3/hlpan/cs488/A1
+CMAKE_SOURCE_DIR = /home/leo/Documents/CS488/A1
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /u3/hlpan/cs488/A1/cmake-build-debug
+CMAKE_BINARY_DIR = /home/leo/Documents/CS488/A1/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/A1.dir/depend.make
@@ -59,42 +59,42 @@ include CMakeFiles/A1.dir/flags.make
 
 CMakeFiles/A1.dir/A1.cpp.o: CMakeFiles/A1.dir/flags.make
 CMakeFiles/A1.dir/A1.cpp.o: ../A1.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u3/hlpan/cs488/A1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/A1.dir/A1.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/A1.dir/A1.cpp.o -c /u3/hlpan/cs488/A1/A1.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/leo/Documents/CS488/A1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/A1.dir/A1.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/A1.dir/A1.cpp.o -c /home/leo/Documents/CS488/A1/A1.cpp
 
 CMakeFiles/A1.dir/A1.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/A1.dir/A1.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /u3/hlpan/cs488/A1/A1.cpp > CMakeFiles/A1.dir/A1.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/leo/Documents/CS488/A1/A1.cpp > CMakeFiles/A1.dir/A1.cpp.i
 
 CMakeFiles/A1.dir/A1.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/A1.dir/A1.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u3/hlpan/cs488/A1/A1.cpp -o CMakeFiles/A1.dir/A1.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/leo/Documents/CS488/A1/A1.cpp -o CMakeFiles/A1.dir/A1.cpp.s
 
 CMakeFiles/A1.dir/Main.cpp.o: CMakeFiles/A1.dir/flags.make
 CMakeFiles/A1.dir/Main.cpp.o: ../Main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u3/hlpan/cs488/A1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/A1.dir/Main.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/A1.dir/Main.cpp.o -c /u3/hlpan/cs488/A1/Main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/leo/Documents/CS488/A1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/A1.dir/Main.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/A1.dir/Main.cpp.o -c /home/leo/Documents/CS488/A1/Main.cpp
 
 CMakeFiles/A1.dir/Main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/A1.dir/Main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /u3/hlpan/cs488/A1/Main.cpp > CMakeFiles/A1.dir/Main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/leo/Documents/CS488/A1/Main.cpp > CMakeFiles/A1.dir/Main.cpp.i
 
 CMakeFiles/A1.dir/Main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/A1.dir/Main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u3/hlpan/cs488/A1/Main.cpp -o CMakeFiles/A1.dir/Main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/leo/Documents/CS488/A1/Main.cpp -o CMakeFiles/A1.dir/Main.cpp.s
 
 CMakeFiles/A1.dir/maze.cpp.o: CMakeFiles/A1.dir/flags.make
 CMakeFiles/A1.dir/maze.cpp.o: ../maze.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u3/hlpan/cs488/A1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/A1.dir/maze.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/A1.dir/maze.cpp.o -c /u3/hlpan/cs488/A1/maze.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/leo/Documents/CS488/A1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/A1.dir/maze.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/A1.dir/maze.cpp.o -c /home/leo/Documents/CS488/A1/maze.cpp
 
 CMakeFiles/A1.dir/maze.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/A1.dir/maze.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /u3/hlpan/cs488/A1/maze.cpp > CMakeFiles/A1.dir/maze.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/leo/Documents/CS488/A1/maze.cpp > CMakeFiles/A1.dir/maze.cpp.i
 
 CMakeFiles/A1.dir/maze.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/A1.dir/maze.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u3/hlpan/cs488/A1/maze.cpp -o CMakeFiles/A1.dir/maze.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/leo/Documents/CS488/A1/maze.cpp -o CMakeFiles/A1.dir/maze.cpp.s
 
 # Object files for target A1
 A1_OBJECTS = \
@@ -110,7 +110,7 @@ A1_EXTERNAL_OBJECTS =
 ../A1: CMakeFiles/A1.dir/maze.cpp.o
 ../A1: CMakeFiles/A1.dir/build.make
 ../A1: CMakeFiles/A1.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/u3/hlpan/cs488/A1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable ../A1"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/leo/Documents/CS488/A1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable ../A1"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/A1.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -123,6 +123,6 @@ CMakeFiles/A1.dir/clean:
 .PHONY : CMakeFiles/A1.dir/clean
 
 CMakeFiles/A1.dir/depend:
-	cd /u3/hlpan/cs488/A1/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /u3/hlpan/cs488/A1 /u3/hlpan/cs488/A1 /u3/hlpan/cs488/A1/cmake-build-debug /u3/hlpan/cs488/A1/cmake-build-debug /u3/hlpan/cs488/A1/cmake-build-debug/CMakeFiles/A1.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/leo/Documents/CS488/A1/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/leo/Documents/CS488/A1 /home/leo/Documents/CS488/A1 /home/leo/Documents/CS488/A1/cmake-build-debug /home/leo/Documents/CS488/A1/cmake-build-debug /home/leo/Documents/CS488/A1/cmake-build-debug/CMakeFiles/A1.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/A1.dir/depend
 

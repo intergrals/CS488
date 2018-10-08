@@ -870,11 +870,11 @@ detail/type_vec4.hpp
 detail/func_vector_relational.hpp
 ../../shared/include/glm/detail/func_vector_relational.hpp
 
-/u3/hlpan/cs488/A2/A2.cpp
+/home/leo/Documents/CS488/A2/A2.cpp
 A2.hpp
-/u3/hlpan/cs488/A2/A2.hpp
+/home/leo/Documents/CS488/A2/A2.hpp
 cs488-framework/GlErrorCheck.hpp
-/u3/hlpan/cs488/A2/cs488-framework/GlErrorCheck.hpp
+/home/leo/Documents/CS488/A2/cs488-framework/GlErrorCheck.hpp
 iostream
 -
 imgui/imgui.h
@@ -886,13 +886,13 @@ glm/gtc/type_ptr.hpp
 glm/gtx/io.hpp
 -
 
-/u3/hlpan/cs488/A2/A2.hpp
+/home/leo/Documents/CS488/A2/A2.hpp
 cs488-framework/CS488Window.hpp
-/u3/hlpan/cs488/A2/cs488-framework/CS488Window.hpp
+/home/leo/Documents/CS488/A2/cs488-framework/CS488Window.hpp
 cs488-framework/OpenGLImport.hpp
-/u3/hlpan/cs488/A2/cs488-framework/OpenGLImport.hpp
+/home/leo/Documents/CS488/A2/cs488-framework/OpenGLImport.hpp
 cs488-framework/ShaderProgram.hpp
-/u3/hlpan/cs488/A2/cs488-framework/ShaderProgram.hpp
+/home/leo/Documents/CS488/A2/cs488-framework/ShaderProgram.hpp
 glm/glm.hpp
 -
 vector

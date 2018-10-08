@@ -4,9 +4,9 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/u3/hlpan/cs488/A1/A1.cpp" "/u3/hlpan/cs488/A1/cmake-build-debug/CMakeFiles/A1.dir/A1.cpp.o"
-  "/u3/hlpan/cs488/A1/Main.cpp" "/u3/hlpan/cs488/A1/cmake-build-debug/CMakeFiles/A1.dir/Main.cpp.o"
-  "/u3/hlpan/cs488/A1/maze.cpp" "/u3/hlpan/cs488/A1/cmake-build-debug/CMakeFiles/A1.dir/maze.cpp.o"
+  "/home/leo/Documents/CS488/A1/A1.cpp" "/home/leo/Documents/CS488/A1/cmake-build-debug/CMakeFiles/A1.dir/A1.cpp.o"
+  "/home/leo/Documents/CS488/A1/Main.cpp" "/home/leo/Documents/CS488/A1/cmake-build-debug/CMakeFiles/A1.dir/Main.cpp.o"
+  "/home/leo/Documents/CS488/A1/maze.cpp" "/home/leo/Documents/CS488/A1/cmake-build-debug/CMakeFiles/A1.dir/maze.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

@@ -6,5 +6,5 @@ CXX_FLAGS = -g   -std=gnu++11
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/u3/hlpan/cs488/A2/../shared -I/u3/hlpan/cs488/A2/../shared/include -I/u3/hlpan/cs488/A2/../shared/gl3w -I/u3/hlpan/cs488/A2/../shared/imgui 
+CXX_INCLUDES = -I/home/leo/Documents/CS488/A2/../shared -I/home/leo/Documents/CS488/A2/../shared/include -I/home/leo/Documents/CS488/A2/../shared/gl3w -I/home/leo/Documents/CS488/A2/../shared/imgui 
 

@@ -93,7 +93,8 @@ protected:
 	glm::mat3 F_v; // View frame
 
 	// Transformation variables
-	glm::mat4 MT;           // translation and rotation matrix
+	glm::mat4 MT;           // local translation and rotation matrix
+	glm::mat4 wMT;          // world transformation matrix
 	float scale_factors[3]; // scaling factors for shape
 
 

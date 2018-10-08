@@ -11,7 +11,70 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="37cdfded-5aa6-468b-908e-711aa4509366" name="Default Changelist" comment="" />
+    <list default="true" id="37cdfded-5aa6-468b-908e-711aa4509366" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../A2/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/A1.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/A1.cbp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CMakeCCompiler.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CMakeCXXCompiler.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CMakeDetermineCompilerABI_C.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CMakeDetermineCompilerABI_CXX.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CMakeSystem.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CompilerIdC/CMakeCCompilerId.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CompilerIdC/a.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CompilerIdCXX/CMakeCXXCompilerId.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CompilerIdCXX/a.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/A1.dir/A1.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/A1.dir/CXX.includecache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/A1.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/A1.dir/DependInfo.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/A1.dir/Main.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/A1.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/A1.dir/build.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/A1.dir/depend.internal" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/A1.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/A1.dir/depend.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/A1.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/A1.dir/flags.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/A1.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/A1.dir/link.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/A1.dir/maze.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.bin" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/A2.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/A2.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/build/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/build/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/A2.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/A2.cbp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeCache.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/3.12.2/CMakeCCompiler.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/3.12.2/CMakeCCompiler.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/3.12.2/CMakeCXXCompiler.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/3.12.2/CMakeCXXCompiler.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/3.12.2/CMakeDetermineCompilerABI_C.bin" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/3.12.2/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/3.12.2/CMakeDetermineCompilerABI_CXX.bin" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/3.12.2/CMakeDetermineCompilerABI_CXX.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/3.12.2/CMakeSystem.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/3.12.2/CMakeSystem.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/3.12.2/CompilerIdC/a.out" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/3.12.2/CompilerIdC/a.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/3.12.2/CompilerIdCXX/a.out" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/3.12.2/CompilerIdCXX/a.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/A2.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/A2.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/CXX.includecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/DependInfo.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/Main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/Main.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/build.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/depend.internal" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/flags.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/A2.dir/link.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/CMakeOutput.log" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/CMakeOutput.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/TargetDirectories.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/TargetDirectories.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/feature_tests.bin" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/CMakeFiles/feature_tests.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../A2/cmake-build-debug/cmake_install.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/cmake-build-debug/cmake_install.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../build/cs488-framework.make" beforeDir="false" afterPath="$PROJECT_DIR$/../build/cs488-framework.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../build/imgui.make" beforeDir="false" afterPath="$PROJECT_DIR$/../build/imgui.make" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -85,6 +148,25 @@
         </counts>
       </usages-collector>
     </session>
+    <session id="824738171">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="1" />
+          <entry key="project.open.time.2" value="1" />
+          <entry key="project.opened" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="cpp" value="19" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="ObjectiveC" value="19" />
+        </counts>
+      </usages-collector>
+    </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
@@ -106,11 +188,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/maze.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1065">
-              <caret line="71" column="81" selection-start-line="71" selection-start-column="81" selection-end-line="71" selection-end-column="81" />
+            <state relative-caret-position="30">
+              <caret line="2" column="20" lean-forward="true" selection-start-line="2" selection-start-column="20" selection-end-line="2" selection-end-column="20" />
             </state>
           </provider>
         </entry>
@@ -124,14 +206,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/A1.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="685">
+            <state relative-caret-position="9345">
               <caret line="623" column="13" selection-start-line="623" selection-start-column="13" selection-end-line="623" selection-end-column="13" />
-              <folding>
-                <element signature="e#48#65#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -207,6 +286,9 @@
       <replace>outsideGrid</replace>
     </replaceStrings>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
@@ -215,6 +297,7 @@
         <option value="$PROJECT_DIR$/A1.hpp" />
         <option value="$PROJECT_DIR$/A1.cpp" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/maze.cpp" />
       </list>
     </option>
   </component>
@@ -231,11 +314,13 @@
     <option name="width" value="1248" />
     <option name="height" value="1084" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -257,7 +342,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -323,11 +407,12 @@
       <workItem from="1538595482728" duration="2713000" />
       <workItem from="1538666929052" duration="14000" />
       <workItem from="1538667397408" duration="416000" />
+      <workItem from="1538941684113" duration="91000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="83838000" />
+    <option name="totallyTimeSpent" value="83929000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -339,9 +424,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="64" y="-11" width="2497" height="1452" extended-state="6" />
+    <frame x="0" y="0" width="1366" height="768" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18374847" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18636364" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -352,8 +438,8 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32953683" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Messages" order="8" weight="0.32919255" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="9" sideWeight="0.499387" visible="true" weight="0.23975721" />
+      <window_info active="true" anchor="bottom" id="Messages" order="8" visible="true" weight="0.3286385" />
+      <window_info anchor="bottom" id="Terminal" order="9" sideWeight="0.499387" weight="0.23868954" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.500613" side_tool="true" weight="0.23234624" />
       <window_info anchor="bottom" id="Version Control" order="11" show_stripe_button="false" />
       <window_info anchor="bottom" id="CMake" order="12" weight="0.32852808" />
@@ -394,13 +480,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///org/cs/u3/hlpan/cs488/A1/A1.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="494" column="35" lean-forward="true" selection-start-line="494" selection-start-column="35" selection-end-line="494" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file:///org/cs/u3/hlpan/cs488/A1/A1.cpp" />
     <entry file="file://$PROJECT_DIR$/stb_image.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1834">
@@ -408,31 +488,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" selection-start-line="18" selection-end-line="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Main.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
           <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/maze.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1065">
-          <caret line="71" column="81" selection-start-line="71" selection-start-column="81" selection-end-line="71" selection-end-column="81" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/maze.hpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="12" selection-start-column="12" selection-end-column="12" />
         </state>
       </provider>
     </entry>
@@ -462,11 +521,29 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/A1.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="685">
+        <state relative-caret-position="9345">
           <caret line="623" column="13" selection-start-line="623" selection-start-column="13" selection-end-line="623" selection-end-column="13" />
-          <folding>
-            <element signature="e#48#65#0" expanded="true" />
-          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="18" selection-start-line="18" selection-end-line="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/maze.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="12" selection-start-column="12" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/maze.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="20" lean-forward="true" selection-start-line="2" selection-start-column="20" selection-end-line="2" selection-end-column="20" />
         </state>
       </provider>
     </entry>

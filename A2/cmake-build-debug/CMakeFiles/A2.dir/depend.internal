@@ -103,8 +103,8 @@ CMakeFiles/A2.dir/A2.cpp.o
  ../../shared/include/glm/vec3.hpp
  ../../shared/include/glm/vec4.hpp
  ../../shared/include/glm/vector_relational.hpp
- /u3/hlpan/cs488/A2/A2.cpp
- /u3/hlpan/cs488/A2/A2.hpp
+ /home/leo/Documents/CS488/A2/A2.cpp
+ /home/leo/Documents/CS488/A2/A2.hpp
 CMakeFiles/A2.dir/Main.cpp.o
  ../../shared/cs488-framework/CS488Window.hpp
  ../../shared/cs488-framework/OpenGLImport.hpp
@@ -191,5 +191,5 @@ CMakeFiles/A2.dir/Main.cpp.o
  ../../shared/include/glm/vec3.hpp
  ../../shared/include/glm/vec4.hpp
  ../../shared/include/glm/vector_relational.hpp
- /u3/hlpan/cs488/A2/A2.hpp
- /u3/hlpan/cs488/A2/Main.cpp
+ /home/leo/Documents/CS488/A2/A2.hpp
+ /home/leo/Documents/CS488/A2/Main.cpp
