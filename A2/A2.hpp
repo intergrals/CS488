@@ -97,5 +97,9 @@ protected:
 	glm::mat4 wMT;          // world transformation matrix
 	float scale_factors[3]; // scaling factors for shape
 
-
+    // viewport variables
+    double startX, startY;
+    double endX, endY;
+    bool firstClick;
+    glm::mat4 vMT;
 };

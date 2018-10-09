@@ -79,11 +79,19 @@ void A2::init()
 
     MT = rM * MT;
     wMT = glm::mat4(1.0f);
+    vMT = glm::mat4(1.0f);
 
     mode = R;
     mL = false;
     mM = false;
     mR = false;
+    firstClick = false;
+
+    // default window size
+	startX = -0.95;
+	startY = -0.95;
+	endX = 0.95;
+	endY = 0.95;
 }
 
 //----------------------------------------------------------------------------------------
@@ -245,10 +253,10 @@ void A2::drawOctahedron() {
 
 	// apply transformations
 	for( int i = 0; i < 6; i++ ) {
-		v[i] = wMT * MT * MS * v[i];
-		if ( i < 3 ) a[i] = wMT * MT * a[i];
+		v[i] = vMT * wMT * MT * MS * v[i];
+		if ( i < 3 ) a[i] = vMT * wMT * MT * a[i];
 	}
-	o = wMT * MT * o;
+	o = vMT * wMT * MT * o;
 
 	// vertices in 2d
 	glm::vec2 v2[6];
@@ -332,10 +340,10 @@ void A2::appLogic()
     // Apply transformations and change to 2d points
     glm::vec2 a2[3];
     for( int i = 0; i < 3; i++ ) {
-        a[i] = wMT * a[i];
+        a[i] = vMT * wMT * a[i];
         a2[i] = vec2( a[i].x, a[i].y );
     }
-    Ow = wMT * Ow;
+    Ow = vMT * wMT * Ow;
     glm::vec2 Ow2 = glm::vec2( Ow.x, Ow.y );
 
     // Draw world axis
@@ -349,6 +357,13 @@ void A2::appLogic()
 
 	// Draw octahedron
     drawOctahedron();
+
+    // Draw window
+    setLineColour( vec3( 0.0f, 0.0f, 0.0f ) );
+    drawLine( glm::vec2( startX, startY ), glm::vec2( startX, endY ) );
+    drawLine( glm::vec2( startX, startY ), glm::vec2( endX, startY ) );
+    drawLine( glm::vec2( startX, endY ), glm::vec2( endX, endY ) );
+    drawLine( glm::vec2( endX, startY ), glm::vec2( endX, endY ) );
 }
 
 //----------------------------------------------------------------------------------------
@@ -492,7 +507,7 @@ bool A2::mouseMoveEvent (
 	if( mode == R ) {
 
 		// TODO: Change 768 to be relative to viewport.
-		double rotation_amt = 360 * dist / 768;
+		double rotation_amt = 360 * dist / CS488Window::m_windowWidth;
 		auto angle = (float) radians( rotation_amt );
 
 		// Make transformation matrix depending on which mouse button is down.
@@ -522,7 +537,7 @@ bool A2::mouseMoveEvent (
 		}
 	} else if( mode == S ) {
 	    // TODO: same thing
-	    double scale_amt = dist / 768; 
+	    double scale_amt = dist / CS488Window::m_windowWidth;
 
 	    if( mL && ( scale_factors[0] > 0.05f || scale_amt > 0.0f ) ) {
 	        scale_factors[0] += scale_amt;
@@ -537,7 +552,7 @@ bool A2::mouseMoveEvent (
             //if( scale_factors[2] < 0.05f ) scale_factors[2] = 0.1f;
         }
 	} else if( mode == T ) {
-	    float dist_move = (float) dist / 768;
+	    float dist_move = (float) dist / CS488Window::m_windowWidth * 2;
 
 	    glm::mat4 MTr(1.0f);
 	    if( mL ) {
@@ -554,7 +569,7 @@ bool A2::mouseMoveEvent (
         }
         MT = MT * MTr;
 	} else if( mode == E ) {
-        float dist_move = (float) dist / 768;
+        float dist_move = (float) dist / CS488Window::m_windowWidth * 2;
 
         glm::mat4 wMTr(1.0f);
         if( mL ) {
@@ -571,7 +586,7 @@ bool A2::mouseMoveEvent (
         }
         wMT = wMT * wMTr;
 	} else if( mode == O ) {
-        double rotation_amt = 360 * dist / 768;
+        double rotation_amt = 360 * dist / CS488Window::m_windowWidth;
         auto angle = (float) radians( rotation_amt );
 
         // Make transformation matrix depending on which mouse button is down.
@@ -599,6 +614,35 @@ bool A2::mouseMoveEvent (
             rMR[1][1] = cos( angle );
             wMT = wMT * rMR;
         }
+	} else if( mode == V ) {
+	    if( mL ) {
+	        // change X pos to be in terms of a 2x2 grid ( -1 to +1 )
+	        double xRel = xPos / CS488Window::m_windowWidth * 2 - 1;
+            double yRel = -( yPos / CS488Window::m_windowHeight * 2 - 1 );
+
+            if (firstClick) {
+                // Ensure that when the mouse is first clicked, the window size is 0
+                firstClick = false;
+                startX = xRel;
+                startY = yRel;
+            }
+            // update window corner
+            endX = xRel;
+            endY = yRel;
+
+            // scale world accordingly
+            vMT = glm::mat4(1.0f);
+
+            vMT[0][0] = (float) ( endX - startX ) / 2;
+            vMT[1][1] = (float) ( endY - startY ) / 2;
+
+            // translate accordingly
+            vMT[3][0] = (float) ( endX + startX ) / 2;
+            vMT[3][1] = (float) ( endY + startY ) / 2;
+        }
+
+
+
 	}
 
 
@@ -622,6 +666,7 @@ bool A2::mouseButtonInputEvent (
 		if ( actions == GLFW_PRESS ) {
 			if ( button == GLFW_MOUSE_BUTTON_LEFT ) {
 				mL = true;
+				firstClick = true;
 
 				eventHandled = true;
 			} else if( button == GLFW_MOUSE_BUTTON_MIDDLE ) {
