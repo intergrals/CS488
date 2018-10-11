@@ -67,8 +67,8 @@ protected:
 	void drawOctahedron();
 	glm::mat4 setupPMat();
 	void reset();
-	void clipping( glm::vec4 &A, glm::vec4 &B );
-	void clipTo( glm::vec4 &A, glm::vec4 &B, glm::vec4 P, glm::vec4 n );
+    void clipTo( glm::vec4 &A, glm::vec4 &B, glm::vec4 P, glm::vec4 n );
+    void clipping( glm::vec4 &A, glm::vec4 &B );
 
 	// Interaction mode classifiers
 	enum interaction_modes { O, E, P, R, T, S, V };

@@ -94,9 +94,9 @@ void A2::reset() {
     endY = 0.95;
 
     // set perspective
-    n = 0.0f;
-    f = 2.0f;
-    FoV = 30.0f;
+    n = 1.0f;
+    f = 10.0f;
+    FoV = 50.0f;
     pMT = setupPMat();
 
     // set display variables
@@ -109,18 +109,23 @@ void A2::reset() {
 	modRot[0] = 0.0f;
 	modRot[1] = 0.0f;
 	modRot[2] = 0.0f;
-	modTrans[0] = 0.0f;
-	modTrans[1] = 0.0f;
+	modTrans[0] = 0.25f;
+	modTrans[1] = -0.25f;
 	modTrans[2] = 0.0f;
 
 	glm::mat4 temp(1.0f);
-	temp[3][2] = 2;
+	temp[3][2] = -3;
 	wMT = temp * wMT;
 
-	normals[0] = glm::vec4( glm::vec3( 0, 1, 0 ), 1 );
-	normals[1] = glm::vec4( glm::vec3( -1, 0, 0 ), 1 );
-	normals[2] = glm::vec4( glm::vec3( 0, -1, 0 ), 1 );
-	normals[3] = glm::vec4( glm::vec3( 1, 0, 0 ), 1 );
+	glm::mat4 temp2(1.0f);
+	temp2[3][0] = 0.25f;
+	temp2[3][1] = -0.25f;
+	MT = temp2 * MT;
+
+	normals[0] = glm::vec4( glm::vec3(  0,  1, 0 ), 1 );
+	normals[1] = glm::vec4( glm::vec3( -1,  0, 0 ), 1 );
+	normals[2] = glm::vec4( glm::vec3(  0, -1, 0 ), 1 );
+	normals[3] = glm::vec4( glm::vec3(  1,  0, 0 ), 1 );
 }
 
 //----------------------------------------------------------------------------------------
@@ -255,29 +260,25 @@ void A2::clipTo( glm::vec4 &A, glm::vec4 &B, glm::vec4 P, glm::vec4 n ) {
 	else B = A + t * ( B - A );
 }
 
-
 //---------------------------------------------------------------------------------------
 void A2::clipping( glm::vec4 &A, glm::vec4 &B ) {
-	// viewport
-
 	clipTo( A, B, glm::vec4(      0, startY, 0, 1 ), normals[0] );
 	clipTo( A, B, glm::vec4(   endX,      0, 0, 1 ), normals[1] );
 	clipTo( A, B, glm::vec4(      0,   endY, 0, 1 ), normals[2] );
 	clipTo( A, B, glm::vec4( startX,      0, 0, 1 ), normals[3] );
-
-	clipTo( A, B, glm::vec4( 0, 0, f, 1 ), glm::vec4( 0, 0, -1, 1 ) );
-	clipTo( A, B, glm::vec4( 0, 0, n, 1 ), glm::vec4( 0, 0,  1, 1 ) );
 }
-
 
 //---------------------------------------------------------------------------------------
 void A2::drawWorldLine( glm::vec4 A, glm::vec4 B, glm::vec3 col ) {
 
 	A = vMT * pMT * wMT * A;
-	A = A / A.w;
 	B = vMT * pMT * wMT * B;
+
+    A = A / A.w;
 	B = B / B.w;
+
 	clipping( A, B );
+
 	glm::vec2 A2 = vec2( A.x, A.y );
 	glm::vec2 B2 = vec2( B.x, B.y );
 
@@ -287,7 +288,6 @@ void A2::drawWorldLine( glm::vec4 A, glm::vec4 B, glm::vec3 col ) {
 
 }
 
-
 //---------------------------------------------------------------------------------------
 void A2::drawViewLine( glm::vec4 A, glm::vec4 B, glm::vec3 col ) {
 	// make scaling matrix
@@ -296,47 +296,13 @@ void A2::drawViewLine( glm::vec4 A, glm::vec4 B, glm::vec3 col ) {
 	MS[1][1] = scale_factors[1];
 	MS[2][2] = scale_factors[2];
 
-
-
-	/*// apply transformations
-	for( int i = 0; i < 6; i++ ) {
-		v[i] = vMT * pMT * wMT * MT * MS * v[i];
-		v[i] = v[i] / v[i].w;
-		if ( i < 3 ) {
-			a[i] = vMT * pMT * wMT * MT * a[i];
-			a[i] = a[i] / a[i].w;
-		}
-	}
-	o = vMT * pMT * wMT * MT * o;
-	o = o / o.w;*/
-
 	A = vMT * pMT * wMT * MT * MS * A;
-	A = A / A.w;
 	B = vMT * pMT * wMT * MT * MS * B;
-	B = B / B.w;
 
+    A = A / A.w;
+    B = B / B.w;
 
-	/*clipping( v[0], v[2] );
-	clipping( v[0], v[3] );
-	clipping( v[0], v[4] );
-	clipping( v[0], v[5] );
-	clipping( v[1], v[2] );
-	clipping( v[1], v[3] );
-	clipping( v[1], v[4] );
-	clipping( v[1], v[5] );
-	clipping( v[2], v[4] );
-	clipping( v[2], v[5] );
-	clipping( v[3], v[4] );
-	clipping( v[3], v[5] );*/
-
-	clipping( A, B );
-
-
-	/*// vertices in 2d
-	glm::vec2 v2[6];
-	for( int i = 0; i < 6; i++ ) {
-		v2[i] = vec2( v[i].x, v[i].y );
-	}*/
+    clipping( A, B );
 
 	glm::vec2 A2 = vec2( A.x, A.y );
 	glm::vec2 B2 = vec2( B.x, B.y );
@@ -370,38 +336,6 @@ void A2::drawOctahedron() {
 	// origin
 	glm::vec4 o =  glm::vec4( glm::vec3( 0.0f, 0.0f, 0.0f ), 1 );
 
-	/*
-	// apply transformations
-	for( int i = 0; i < 3; i++ ) {
-			a[i] = vMT * pMT * wMT * MT * a[i];
-			a[i] = a[i] / a[i].w;
-	}
-	o = vMT * pMT * wMT * MT * o;
-	o = o / o.w;
-
-	// do clipping
-	clipping(    o, a[0] );
-	clipping(    o, a[1] );
-	clipping(    o, a[2] );
-
-	// turn to 2d
-	glm::vec2 a2[3];
-	for( int i = 0; i < 3; i++ ) {
-		a2[i] = vec2( a[i].x, a[i].y );
-	}
-
-	glm::vec2 o2 = vec2( o.x, o.y);
-
-    // draw
-
-    // draw local axis
-    setLineColour( vec3(1.0f, 0.5f, 0.0f) );
-    drawLine( o2, a2[0] );
-    setLineColour( vec3(0.0f, 1.0f, 0.5f) );
-    drawLine( o2, a2[1] );
-    setLineColour( vec3(0.5f, 0.0f, 1.0f) );
-    drawLine( o2, a2[2] );*/
-
 	// draw origin
 	drawViewLine( o, a[0], glm::vec3(1.0f, 0.5f, 0.0f) );
 	drawViewLine( o, a[1], glm::vec3(0.0f, 1.0f, 0.5f) );
@@ -425,10 +359,10 @@ void A2::drawOctahedron() {
 }
 
 glm::mat4 A2::setupPMat() {
-    double aspect = 1.0f;
+    double aspect = 1;
     glm::mat4 retPMat(0.0f);
-    retPMat[0][0] = (float) ( ( 1 / glm::tan( FoV / 2.0f ) ) * aspect );
-    retPMat[1][1] = (float) ( 1 / tan( FoV / 2.0f ) );
+    retPMat[0][0] = (float) ( ( 1 / glm::tan( glm::radians( FoV ) / 2.0f ) ) * aspect );
+    retPMat[1][1] = (float) ( 1 / tan( glm::radians( FoV ) / 2.0f ) );
     retPMat[2][2] = (float) -( ( f + n ) / ( f - n ) );
     retPMat[2][3] = -1.0f;
     retPMat[3][2] = (float) ( ( -2 * f * n ) / ( f - n ) );
@@ -446,23 +380,6 @@ void A2::appLogic()
 
 	// Call at the beginning of frame, before drawing lines:
 	initLineData();
-
-	/*
-	// Draw outer square:
-	setLineColour(vec3(1.0f, 0.7f, 0.8f));
-	drawLine(vec2(-0.5f, -0.5f), vec2(0.5f, -0.5f));
-	drawLine(vec2(0.5f, -0.5f), vec2(0.5f, 0.5f));
-	drawLine(vec2(0.5f, 0.5f), vec2(-0.5f, 0.5f));
-	drawLine(vec2(-0.5f, 0.5f), vec2(-0.5f, -0.5f));
-
-
-	// Draw inner square:
-	setLineColour(vec3(0.2f, 1.0f, 1.0f));
-	drawLine(vec2(-0.25f, -0.25f), vec2(0.25f, -0.25f));
-	drawLine(vec2(0.25f, -0.25f), vec2(0.25f, 0.25f));
-	drawLine(vec2(0.25f, 0.25f), vec2(-0.25f, 0.25f));
-	drawLine(vec2(-0.25f, 0.25f), vec2(-0.25f, -0.25f));
-    */
 
 	// Draw world axis
     glm::vec4 a[3];
@@ -801,7 +718,7 @@ bool A2::mouseMoveEvent (
 		double relDist = dist / CS488Window::m_windowWidth;
 		if( mL ) {
 			if ( FoV + relDist * 155 < 160 && FoV + relDist * 155 > 5 )
-				FoV += glm::radians( relDist * 155 );
+				FoV += relDist * 155;
 		}
 		if( mM ) {
 			if( n + relDist * 2 < f && n > -relDist * 2 ) n += relDist * 2;
@@ -848,6 +765,24 @@ bool A2::mouseButtonInputEvent (
 		} else if ( actions == GLFW_RELEASE ) {
 			if ( button == GLFW_MOUSE_BUTTON_LEFT ) {
 				mL = false;
+
+				if( mode == V ) {
+					cout << endX << endl;
+					if( endX >  1 ) endX = 1;
+					if( endX < -1 ) endX = -1;
+					if( endY >  1 ) endY = 1;
+					if( endY < -1 ) endY = -1;
+
+					// scale world accordingly
+					vMT = glm::mat4(1.0f);
+
+					vMT[0][0] = (float) ( endX - startX ) / 2;
+					vMT[1][1] = (float) ( endY - startY ) / 2;
+
+					// translate accordingly
+					vMT[3][0] = (float) ( endX + startX ) / 2;
+					vMT[3][1] = (float) ( endY + startY ) / 2;
+				}
 
 				eventHandled = true;
 			} else if( button == GLFW_MOUSE_BUTTON_MIDDLE ) {
