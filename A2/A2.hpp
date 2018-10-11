@@ -62,7 +62,13 @@ protected:
 			const glm::vec2 & v1
 	);
 
+	void drawViewLine( glm::vec4 A, glm::vec4 B, glm::vec3 col );
+	void drawWorldLine( glm::vec4 A, glm::vec4 B, glm::vec3 col );
 	void drawOctahedron();
+	glm::mat4 setupPMat();
+	void reset();
+	void clipping( glm::vec4 &A, glm::vec4 &B );
+	void clipTo( glm::vec4 &A, glm::vec4 &B, glm::vec4 P, glm::vec4 n );
 
 	// Interaction mode classifiers
 	enum interaction_modes { O, E, P, R, T, S, V };
@@ -97,9 +103,22 @@ protected:
 	glm::mat4 wMT;          // world transformation matrix
 	float scale_factors[3]; // scaling factors for shape
 
+	// display variables
+	double viewRot[3];
+	double viewTrans[3];
+	double modRot[3];
+	double modTrans[3];
+
     // viewport variables
     double startX, startY;
     double endX, endY;
     bool firstClick;
     glm::mat4 vMT;
+    glm::vec4 normals[4];      // north, east, south, and west normals
+
+    // projection variables
+    glm::mat4 pMT;          // projection matrix
+    double n;               // nearplane
+    double f;               // farplane
+    double FoV;             // Field of View
 };
