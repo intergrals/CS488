@@ -6,7 +6,7 @@ Hao Pan
 
 Compilation:
 
-The program can be compiled from the A0 directory (the one this file is in) and running the following commands:
+The program can be compiled from the A1 directory (the one this file is in) and running the following commands:
 - premake4 gmake
 - make
 afterwards, the compiled program can be run from the same directory using the command:
