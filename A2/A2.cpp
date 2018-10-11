@@ -788,6 +788,14 @@ bool A2::mouseMoveEvent (
             // translate accordingly
             vMT[3][0] = (float) ( endX + startX ) / 2;
             vMT[3][1] = (float) ( endY + startY ) / 2;
+
+            float xNorm = ( endX > startX )? 1 : -1;
+            float yNorm = ( endY > startY )? 1 : -1;
+
+            normals[1] = glm::vec4( glm::vec3( -xNorm,      0, 0 ), 1 );
+            normals[3] = glm::vec4( glm::vec3(  xNorm,      0, 0 ), 1 );
+            normals[0] = glm::vec4( glm::vec3(      0,  yNorm, 0 ), 1 );
+            normals[2] = glm::vec4( glm::vec3(      0, -yNorm, 0 ), 1 );
         }
 	} else if( mode == P ) {
 		double relDist = dist / CS488Window::m_windowWidth;
