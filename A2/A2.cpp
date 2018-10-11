@@ -95,7 +95,7 @@ void A2::reset() {
 
     // set perspective
     n = 1.0f;
-    f = 10.0f;
+    f = 5.0f;
     FoV = 50.0f;
     pMT = setupPMat();
 
@@ -103,7 +103,7 @@ void A2::reset() {
     viewRot[0] = 0.0f;
 	viewRot[1] = 0.0f;
 	viewRot[2] = 0.0f;
-	viewTrans[0] = 0.0f;
+	viewTrans[0] = -4.0f;
 	viewTrans[1] = 0.0f;
 	viewTrans[2] = 0.0f;
 	modRot[0] = 0.0f;
@@ -114,7 +114,7 @@ void A2::reset() {
 	modTrans[2] = 0.0f;
 
 	glm::mat4 temp(1.0f);
-	temp[3][2] = -3;
+	temp[3][2] = -4;
 	wMT = temp * wMT;
 
 	glm::mat4 temp2(1.0f);
@@ -249,6 +249,11 @@ void A2::drawLine(
 	m_vertexData.numVertices += 2;
 }
 //---------------------------------------------------------------------------------------
+
+/*
+ * Clip a line along a line or plane (given a point on said line and its normal vector)
+ * In this case, this function is for clipping to viewport borders.
+ */
 void A2::clipTo( glm::vec4 &A, glm::vec4 &B, glm::vec4 P, glm::vec4 n ) {
 
 	float wecA = glm::dot( ( A - P ), n );
@@ -260,7 +265,30 @@ void A2::clipTo( glm::vec4 &A, glm::vec4 &B, glm::vec4 P, glm::vec4 n ) {
 	else B = A + t * ( B - A );
 }
 
+/*
+ * This clip is for clipping to the near and far planes. It seems the w coordinate messes up the vector if done with
+ * a 4-dimensional vector.
+ */
+void A2::zClipTo( glm::vec4 &A, glm::vec4 &B, glm::vec4 P, glm::vec4 n ) {
+
+    glm::vec3 A2(A);
+    glm::vec3 B2(B);
+    glm::vec3 P2(P);
+    glm::vec3 n2(n);
+
+    float wecA = glm::dot( ( A2 - P2 ), n2 );
+    float wecB = glm::dot( ( B2 - P2 ), n2 );
+    if( wecA < 0 && wecB < 0 ) A = B;
+    if( wecA >= 0 && wecB >= 0 ) return;
+    float t = wecA / ( wecA - wecB );
+    if( wecA < 0 ) A += t * ( B - A );
+    else B = A + t * ( B - A );
+}
+
 //---------------------------------------------------------------------------------------
+/*
+ * Call clipping for each of the four sides of the viewframe.
+ */
 void A2::clipping( glm::vec4 &A, glm::vec4 &B ) {
 	clipTo( A, B, glm::vec4(      0, startY, 0, 1 ), normals[0] );
 	clipTo( A, B, glm::vec4(   endX,      0, 0, 1 ), normals[1] );
@@ -268,11 +296,24 @@ void A2::clipping( glm::vec4 &A, glm::vec4 &B ) {
 	clipTo( A, B, glm::vec4( startX,      0, 0, 1 ), normals[3] );
 }
 
+/*
+ * Call clipping on near and far plane.
+ */
+void A2::zClipping( glm::vec4 &A, glm::vec4 &B ) {
+    zClipTo( A, B, glm::vec4( 0, 0, n, 1 ), glm::vec4( glm::vec3( 0, 0,  1 ), 1 ) );
+    zClipTo( A, B, glm::vec4( 0, 0, f, 1 ), glm::vec4( glm::vec3( 0, 0, -1 ), 1 ) );
+}
+
 //---------------------------------------------------------------------------------------
+/*
+ * Draw a line from point A to point B in provided colour. Only world transformations are applied.
+ */
 void A2::drawWorldLine( glm::vec4 A, glm::vec4 B, glm::vec3 col ) {
 
 	A = vMT * pMT * wMT * A;
 	B = vMT * pMT * wMT * B;
+
+	zClipping( A, B );
 
     A = A / A.w;
 	B = B / B.w;
@@ -289,6 +330,9 @@ void A2::drawWorldLine( glm::vec4 A, glm::vec4 B, glm::vec3 col ) {
 }
 
 //---------------------------------------------------------------------------------------
+/*
+ * Draw a line from point A to point B in provided colour. World and view transformations are both applied.
+ */
 void A2::drawViewLine( glm::vec4 A, glm::vec4 B, glm::vec3 col ) {
 	// make scaling matrix
 	glm::mat4 MS(1.0f);
@@ -298,6 +342,8 @@ void A2::drawViewLine( glm::vec4 A, glm::vec4 B, glm::vec3 col ) {
 
 	A = vMT * pMT * wMT * MT * MS * A;
 	B = vMT * pMT * wMT * MT * MS * B;
+
+	zClipping( A, B );
 
     A = A / A.w;
     B = B / B.w;
@@ -314,6 +360,9 @@ void A2::drawViewLine( glm::vec4 A, glm::vec4 B, glm::vec3 col ) {
 }
 
 //---------------------------------------------------------------------------------------
+/*
+ * Draw octahedron and its local axis.
+ */
 void A2::drawOctahedron() {
 	// vertices
 	glm::vec4 v[6];
@@ -323,9 +372,6 @@ void A2::drawOctahedron() {
 	v[3] = glm::vec4( glm::vec3(  0.0f, -1.0f,  0.0f ), 1 );
 	v[4] = glm::vec4( glm::vec3(  1.0f,  0.0f,  0.0f ), 1 );
 	v[5] = glm::vec4( glm::vec3( -1.0f,  0.0f,  0.0f ), 1 );
-
-
-	//drawEdge( glm::vec4( glm::vec3( 0.0f, 0.0f, 1.0f ), 1 ), glm::vec4( glm::vec3(  0.0f, -1.0f,  0.0f ), 1 ) );
 
 	// local coordinate axis
 	glm::vec4 a[3];
@@ -358,6 +404,10 @@ void A2::drawOctahedron() {
 
 }
 
+//----------------------------------------------------------------------------------------
+/*
+ * Set up projection matrix when needed.
+ */
 glm::mat4 A2::setupPMat() {
     double aspect = 1;
     glm::mat4 retPMat(0.0f);
@@ -464,6 +514,7 @@ void A2::guiLogic()
 		ImGui::Text( "Model Rotation: x:%.2f | y:%.2f | z:%.2f", modRot[0], modRot[1], modRot[2] );
 		ImGui::Text( "Model Translation: x:%.2f | y:%.2f | z:%.2f", modTrans[0], modTrans[1], modTrans[2] );
 		ImGui::Text( "Model Scale: x:%.2f | y:%.2f | z:%.2f", scale_factors[0], scale_factors[1], scale_factors[2] );
+        ImGui::Text( "Viewport: start:(%.2f, %.2f) | end:(%.2f, %.2f)", startX, startY, endX, endY );
 
 
 		ImGui::Text( "Framerate: %.1f FPS", ImGui::GetIO().Framerate );
