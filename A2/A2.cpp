@@ -103,9 +103,9 @@ void A2::reset() {
     viewRot[0] = 0.0f;
 	viewRot[1] = 0.0f;
 	viewRot[2] = 0.0f;
-	viewTrans[0] = -4.0f;
+	viewTrans[0] = 0.0f;
 	viewTrans[1] = 0.0f;
-	viewTrans[2] = 0.0f;
+	viewTrans[2] = -4.0f;
 	modRot[0] = 0.0f;
 	modRot[1] = 0.0f;
 	modRot[2] = 0.0f;

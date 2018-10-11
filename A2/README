@@ -20,11 +20,8 @@ Manual:
 Here are details for implementations made for ambiguous specifications:
 - Most of the values will change in a reasonable pace. Translations happen at the pace of mouse movement, moving the mouse one screen-length provides one rotation, etc...
 - The two gnomons each have a unique colour for each directional axis, and both gnomons use different colours so that they are easier to distinct when they are close together.
-- The default nearplane is 1 and the default farplane is 10. The default field of view is 50 degrees. The default viewframe size covers 90% of the screen.
+- The default nearplane is 1 and the default farplane is 5. The default field of view is 50 degrees. The default viewframe size covers 90% of the screen.
 - The model has been translated slightly to the left and down so that the model gnomon does not overlap with the world gnomon.
-- The model has been translated back several units so that it appears at a reasonable size.
+- The model has been translated back several units and scaled down 20% so that it appears at a reasonable size.
 - No other initial transformations have been applied.
 - In the case where multiple mouse buttons are held down on rotation, the rotations will be applied in the following order: x, y, z.
-
-The following specifications were not implemented:
-- near and far plane clipping is not in the final version. I do not fully understand how homogeneous clipping works. As a result, translating the shape past the near plane will cause problems because the shape should have been clipped.
