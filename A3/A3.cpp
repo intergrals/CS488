@@ -79,17 +79,41 @@ void A3::init()
 
 	mapVboDataToVertexShaderInputLocations();
 
-	initPerspectiveMatrix();
-
-	initViewMatrix();
-
 	initLightSources();
 
+	// NOTE: Do not move these to reset
+	lmb = false;
+	mmb = false;
+	rmb = false;
+
+	lastX = 0.0f;
+	lastY = 0.0f;
+
+	options = optionFlags{ false, true, false, false };
+	// END NOTE
+
+	reset( A );
 
 	// Exiting the current scope calls delete automatically on meshConsolidator freeing
 	// all vertex data resources.  This is fine since we already copied this data to
 	// VBOs on the GPU.  We have no use for storing vertex data on the CPU side beyond
 	// this point.
+}
+
+//----------------------------------------------------------------------------------------
+void A3::reset( resetTypes r ) {
+
+	// Reset view, perspective, and light
+	if( r == A || r == O ) {
+		initPerspectiveMatrix();
+		initViewMatrix();
+
+		// reset camera location
+		for ( double &i : c_loc ) i = 0.0f;
+	}
+
+	mode = P;
+
 }
 
 //----------------------------------------------------------------------------------------
@@ -256,6 +280,12 @@ void A3::initViewMatrix() {
 			vec3(0.0f, 1.0f, 0.0f));
 }
 
+void A3::updateViewMatrix() {
+	m_view = glm::lookAt(vec3(c_loc[0], c_loc[1], c_loc[2]),
+						 vec3(c_loc[0], c_loc[1], c_loc[2] - 1.0f),
+						 vec3(0.0f, 1.0f, 0.0f));
+}
+
 //----------------------------------------------------------------------------------------
 void A3::initLightSources() {
 	// World-space position
@@ -321,19 +351,72 @@ void A3::guiLogic()
 	}
 
 	static bool showDebugWindow(true);
-	ImGuiWindowFlags windowFlags(ImGuiWindowFlags_AlwaysAutoResize);
+	ImGuiWindowFlags windowFlags(ImGuiWindowFlags_AlwaysAutoResize + ImGuiWindowFlags_MenuBar );
 	float opacity(0.5f);
 
 	ImGui::Begin("Properties", &showDebugWindow, ImVec2(100,100), opacity,
-			windowFlags);
+			windowFlags );
 
 
 		// Add more gui elements here here ...
 
+		// Menu bar items
+		if( ImGui::BeginMenuBar() ) {
+			if( ImGui::BeginMenu( "Application" ) ) {
+				if( ImGui::MenuItem( "Reset Pos[i]tion" ) ) {
+					reset( I );
+				}
+				if( ImGui::MenuItem( "Reset [O]rientation") ) {
+					reset( O );
+				}
+				if( ImGui::MenuItem( "Reset Joint[s]") ) {
+					reset( S );
+				}
+				if( ImGui::MenuItem( "Reset [A]ll") ) {
+					reset( A );
+				}
+				if( ImGui::MenuItem( "[Q]uit" ) ) {
+					glfwSetWindowShouldClose(m_window, GL_TRUE);
+				}
+				ImGui::EndMenu();
+			}
+			if( ImGui::BeginMenu( "Edit" ) ) {
+				if( ImGui::MenuItem( "[U]ndo" ) ) {
+
+				}
+				if( ImGui::MenuItem( "[R]edo" ) ) {
+
+				}
+				ImGui::EndMenu();
+			}
+			if( ImGui::BeginMenu( "Options" ) ) {
+				if( ImGui::MenuItem( "[C]ircle", nullptr, &options.circle ) ) {
+
+				}
+				if( ImGui::MenuItem( "[Z]-Buffer", nullptr, &options.zbuff ) ) {
+
+				}
+				if( ImGui::MenuItem( "[B]ackface Culling", nullptr, &options.bcull ) ) {
+
+				}
+				if( ImGui::MenuItem( "[F]rontface Culling", nullptr, &options.fcull ) ) {
+
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
+
+		// Radio buttons to select mode
+		ImGui::Text( "Interaction Mode" );
+		ImGui::PushID( 0 );
+		ImGui::RadioButton( "[P]osition/Orientation", &mode, P );
+		ImGui::RadioButton( "[J]oints", &mode, J );
+		ImGui::PopID();
 
 		// Create Button, and check if it was clicked:
-		if( ImGui::Button( "Quit Application" ) ) {
-			glfwSetWindowShouldClose(m_window, GL_TRUE);
+		if( ImGui::Button( "Hide [M]enu" ) ) {
+			show_gui = false;
 		}
 
 		ImGui::Text( "Framerate: %.1f FPS", ImGui::GetIO().Framerate );
@@ -495,6 +578,36 @@ bool A3::mouseMoveEvent (
 
 	// Fill in with event handling code...
 
+	double changeX = xPos - lastX;
+	double changeY = yPos - lastY;
+
+	if( mode == P ) {
+		if (lmb) {
+			double deltaX = -changeX / CS488Window::m_windowWidth * 6;
+			double deltaY = changeY / CS488Window::m_windowHeight * 6;
+
+			c_loc[0] += deltaX;
+			c_loc[1] += deltaY;
+
+			eventHandled = true;
+		}
+		if (mmb) {
+			double deltaZ = -changeY / CS488Window::m_windowHeight * 110;
+
+			if (c_loc[2] + deltaZ > -10 && c_loc[2] + deltaZ < 100) c_loc[2] += deltaZ;
+
+			eventHandled = true;
+		}
+		if (rmb) {
+
+			eventHandled = true;
+		}
+		updateViewMatrix();
+	}
+
+	lastX = xPos;
+	lastY = yPos;
+
 	return eventHandled;
 }
 
@@ -510,6 +623,29 @@ bool A3::mouseButtonInputEvent (
 	bool eventHandled(false);
 
 	// Fill in with event handling code...
+	if( actions == GLFW_PRESS ) {
+		if( button == GLFW_MOUSE_BUTTON_LEFT ) {
+			lmb = true;
+			eventHandled = true;
+		} else if( button == GLFW_MOUSE_BUTTON_MIDDLE ) {
+			mmb = true;
+			eventHandled = true;
+		} else if( button == GLFW_MOUSE_BUTTON_RIGHT ) {
+			rmb = true;
+			eventHandled = true;
+		}
+	} else if( actions == GLFW_RELEASE ) {
+		if( button == GLFW_MOUSE_BUTTON_LEFT ) {
+			lmb = false;
+			eventHandled = true;
+		} else if( button == GLFW_MOUSE_BUTTON_MIDDLE ) {
+			mmb = false;
+			eventHandled = true;
+		} else if( button == GLFW_MOUSE_BUTTON_RIGHT ) {
+			rmb = false;
+			eventHandled = true;
+		}
+	}
 
 	return eventHandled;
 }
@@ -556,6 +692,39 @@ bool A3::keyInputEvent (
 	if( action == GLFW_PRESS ) {
 		if( key == GLFW_KEY_M ) {
 			show_gui = !show_gui;
+			eventHandled = true;
+		} else if( key == GLFW_KEY_Q ) {
+			glfwSetWindowShouldClose(m_window, GL_TRUE);
+			eventHandled = true;
+		} else if( key == GLFW_KEY_P ) {
+			mode = P;
+			eventHandled = true;
+		} else if( key == GLFW_KEY_J ) {
+			mode = J;
+			eventHandled = true;
+		} else if( key == GLFW_KEY_I ) {
+			reset( I );
+			eventHandled = true;
+		} else if( key == GLFW_KEY_O ) {
+			reset( O );
+			eventHandled = true;
+		} else if( key == GLFW_KEY_S ) {
+			reset( S );
+			eventHandled = true;
+		} else if( key == GLFW_KEY_A ) {
+			reset( A );
+			eventHandled = true;
+		} else if( key == GLFW_KEY_C ) {
+			options.circle = !options.circle;
+			eventHandled = true;
+		} else if( key == GLFW_KEY_Z ) {
+			options.zbuff = !options.zbuff;
+			eventHandled = true;
+		} else if( key == GLFW_KEY_B ) {
+			options.bcull = !options.bcull;
+			eventHandled = true;
+		} else if( key == GLFW_KEY_F ) {
+			options.fcull = !options.fcull;
 			eventHandled = true;
 		}
 	}

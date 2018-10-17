@@ -52,6 +52,18 @@ protected:
 	void renderSceneGraph(const SceneNode &node);
 	void renderArcCircle();
 
+
+	// define modes
+	enum resetTypes { I, O, S, A };
+	enum interactionMode { P, J };
+
+	/*
+	 * My additional methods
+	 */
+	void reset( resetTypes r );
+	void updateViewMatrix();
+
+
 	glm::mat4 m_perpsective;
 	glm::mat4 m_view;
 
@@ -79,4 +91,28 @@ protected:
 	std::string m_luaSceneFile;
 
 	std::shared_ptr<SceneNode> m_rootNode;
+
+	/*
+	 * My additional fields
+	 */
+
+	// camera coordinates
+	double c_loc[3];
+
+	// current feature mode
+	int mode;
+
+	// mouse down flags
+	bool lmb, mmb, rmb;
+	double lastX, lastY;
+
+	// options fields
+	struct optionFlags {
+		bool circle;
+		bool zbuff;
+		bool bcull;
+		bool fcull;
+	};
+	optionFlags options;
+
 };

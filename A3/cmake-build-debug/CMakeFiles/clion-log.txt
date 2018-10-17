@@ -1,0 +1,4 @@
+/org/cs/u3/hlpan/clion-2018.2.4/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /u3/hlpan/cs488/A3
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /u3/hlpan/cs488/A3/cmake-build-debug
