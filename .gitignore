@@ -33,4 +33,4 @@
 
 # Clion
 */.idea/*.iws
-workspace.xml
+*/workspace.xml
