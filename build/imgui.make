@@ -64,9 +64,9 @@ ifeq ($(config),release)
 endif
 
 OBJECTS := \
+	$(OBJDIR)/imgui.o \
 	$(OBJDIR)/imgui_demo.o \
 	$(OBJDIR)/imgui_draw.o \
-	$(OBJDIR)/imgui.o \
 	$(OBJDIR)/imgui_impl_glfw_gl3.o \
 	$(OBJDIR)/gl3w.o \
 
@@ -129,13 +129,13 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 endif
 
+$(OBJDIR)/imgui.o: ../shared/imgui/imgui.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/imgui_demo.o: ../shared/imgui/imgui_demo.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/imgui_draw.o: ../shared/imgui/imgui_draw.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/imgui.o: ../shared/imgui/imgui.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/imgui_impl_glfw_gl3.o: ../shared/imgui/imgui_impl_glfw_gl3.cpp

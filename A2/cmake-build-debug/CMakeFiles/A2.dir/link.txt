@@ -1,1 +1,1 @@
-/usr/bin/c++  -g   CMakeFiles/A2.dir/A2.cpp.o CMakeFiles/A2.dir/Main.cpp.o  -o ../A2  -L/home/leo/Documents/CS488/A2/../lib -Wl,-rpath,/home/leo/Documents/CS488/A2/../lib -lcs488-framework -limgui -lglfw3 -lGL -lXinerama -lXcursor -lXxf86vm -lXi -lXrandr -lX11 -lstdc++ -ldl -lpthread 
+/usr/bin/c++  -g   CMakeFiles/A2.dir/A2.cpp.o CMakeFiles/A2.dir/Main.cpp.o  -o ../A2  -L/u3/hlpan/cs488/A2/../lib -Wl,-rpath,/u3/hlpan/cs488/A2/../lib -lcs488-framework -limgui -lglfw3 -lGL -lXinerama -lXcursor -lXxf86vm -lXi -lXrandr -lX11 -lstdc++ -ldl -lpthread 
