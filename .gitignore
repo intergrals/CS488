@@ -34,3 +34,4 @@
 # Clion
 */.idea/*.iws
 **/.idea/**/workspace.xml
+**/cmake-build-debug/**
