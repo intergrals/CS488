@@ -58,6 +58,10 @@ void A3::init()
 	glGenVertexArrays(1, &m_vao_meshData);
 	enableVertexShaderInputSlots();
 
+	initViewMatrix();
+
+	matStack.push( m_view );
+
 	processLuaSceneFile(m_luaSceneFile);
 
 	// Load and decode all .obj files at once here.  You may add additional .obj files to
@@ -104,12 +108,13 @@ void A3::init()
 void A3::reset( resetTypes r ) {
 
 	// Reset view, perspective, and light
-	if( r == A || r == O ) {
+	if( r == A || r == I ) {
 		initPerspectiveMatrix();
 		initViewMatrix();
 
 		// reset camera location
 		for ( double &i : c_loc ) i = 0.0f;
+        updateViewMatrix();
 	}
 
 	mode = P;
@@ -284,6 +289,11 @@ void A3::updateViewMatrix() {
 	m_view = glm::lookAt(vec3(c_loc[0], c_loc[1], c_loc[2]),
 						 vec3(c_loc[0], c_loc[1], c_loc[2] - 1.0f),
 						 vec3(0.0f, 1.0f, 0.0f));
+
+	if ( matStack.size() != 1 ) throw "What the heck!! Why is the size not 1?!";
+
+	matStack.pop();
+	matStack.push( m_view );
 }
 
 //----------------------------------------------------------------------------------------
@@ -479,46 +489,58 @@ void A3::draw() {
 	renderArcCircle();
 }
 
+//
+void A3::renderJoint( const SceneNode &n ) {
+
+    // This is emphatically *not* how you should be drawing the scene graph in
+    // your final implementation.  This is a non-hierarchical demonstration
+    // in which we assume that there is a list of GeometryNodes living directly
+    // underneath the root node, and that we can draw them in a loop.  It's
+    // just enough to demonstrate how to get geometry and materials out of
+    // a GeometryNode and onto the screen.
+
+    // You'll want to turn this into recursive code that walks over the tree.
+    // You can do that by putting a method in SceneNode, overridden in its
+    // subclasses, that renders the subtree rooted at every node.  Or you
+    // could put a set of mutually recursive functions in this class, which
+    // walk down the tree from nodes of different types.
+
+    matStack.push( matStack.top() * n.trans );
+
+    for (const SceneNode * node : n.children) {
+
+        if (node->m_nodeType != NodeType::GeometryNode)
+            continue;
+
+        const GeometryNode * geometryNode = static_cast<const GeometryNode *>(node);
+
+        updateShaderUniforms( m_shader, *geometryNode, matStack.top() );
+
+        // Get the BatchInfo corresponding to the GeometryNode's unique MeshId.
+        BatchInfo batchInfo = m_batchInfoMap[geometryNode->meshId];
+
+        //-- Now render the mesh:
+        m_shader.enable();
+        glDrawArrays(GL_TRIANGLES, batchInfo.startIndex, batchInfo.numIndices);
+        m_shader.disable();
+
+        renderJoint( *node );
+
+    }
+
+    matStack.pop();
+}
+
 //----------------------------------------------------------------------------------------
 void A3::renderSceneGraph(const SceneNode & root) {
+    // Bind the VAO once here, and reuse for all GeometryNode rendering below.
+    glBindVertexArray(m_vao_meshData);
 
-	// Bind the VAO once here, and reuse for all GeometryNode rendering below.
-	glBindVertexArray(m_vao_meshData);
-
-	// This is emphatically *not* how you should be drawing the scene graph in
-	// your final implementation.  This is a non-hierarchical demonstration
-	// in which we assume that there is a list of GeometryNodes living directly
-	// underneath the root node, and that we can draw them in a loop.  It's
-	// just enough to demonstrate how to get geometry and materials out of
-	// a GeometryNode and onto the screen.
-
-	// You'll want to turn this into recursive code that walks over the tree.
-	// You can do that by putting a method in SceneNode, overridden in its
-	// subclasses, that renders the subtree rooted at every node.  Or you
-	// could put a set of mutually recursive functions in this class, which
-	// walk down the tree from nodes of different types.
-
-	for (const SceneNode * node : root.children) {
-
-		if (node->m_nodeType != NodeType::GeometryNode)
-			continue;
-
-		const GeometryNode * geometryNode = static_cast<const GeometryNode *>(node);
-
-		updateShaderUniforms(m_shader, *geometryNode, m_view);
+    renderJoint( root );
 
 
-		// Get the BatchInfo corresponding to the GeometryNode's unique MeshId.
-		BatchInfo batchInfo = m_batchInfoMap[geometryNode->meshId];
-
-		//-- Now render the mesh:
-		m_shader.enable();
-		glDrawArrays(GL_TRIANGLES, batchInfo.startIndex, batchInfo.numIndices);
-		m_shader.disable();
-	}
-
-	glBindVertexArray(0);
-	CHECK_GL_ERRORS;
+    glBindVertexArray(0);
+    CHECK_GL_ERRORS;
 }
 
 //----------------------------------------------------------------------------------------
@@ -581,10 +603,10 @@ bool A3::mouseMoveEvent (
 	double changeX = xPos - lastX;
 	double changeY = yPos - lastY;
 
-	if( mode == P ) {
+	if( mode == P && ( lmb || mmb || rmb ) ) {
 		if (lmb) {
-			double deltaX = -changeX / CS488Window::m_windowWidth * 6;
-			double deltaY = changeY / CS488Window::m_windowHeight * 6;
+			double deltaX = -changeX / CS488Window::m_windowWidth * 5;
+			double deltaY = changeY / CS488Window::m_windowHeight * 5;
 
 			c_loc[0] += deltaX;
 			c_loc[1] += deltaY;
@@ -592,7 +614,7 @@ bool A3::mouseMoveEvent (
 			eventHandled = true;
 		}
 		if (mmb) {
-			double deltaZ = -changeY / CS488Window::m_windowHeight * 110;
+			double deltaZ = -changeY / CS488Window::m_windowHeight * 5;
 
 			if (c_loc[2] + deltaZ > -10 && c_loc[2] + deltaZ < 100) c_loc[2] += deltaZ;
 

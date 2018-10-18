@@ -22,4 +22,4 @@ add_executable(A3
 
 set(CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} -Wl,../../lib/" )
 
-target_link_libraries(A3 -lcs488-framework -limgui -lglfw3 -lGL -lXinerama -lXcursor -lXxf86vm -lXi -lXrandr -lX11 -lstdc++ -ldl -lpthread)
+target_link_libraries(A3 -lcs488-framework -limgui -llua -lglfw3 -lGL -lXinerama -lXcursor -lXxf86vm -lXi -lXrandr -lX11 -lstdc++ -ldl -lpthread)

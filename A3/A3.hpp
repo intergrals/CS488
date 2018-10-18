@@ -11,6 +11,7 @@
 
 #include <glm/glm.hpp>
 #include <memory>
+#include <stack>
 
 struct LightSource {
 	glm::vec3 position;
@@ -62,6 +63,7 @@ protected:
 	 */
 	void reset( resetTypes r );
 	void updateViewMatrix();
+	void renderJoint( const SceneNode &n );
 
 
 	glm::mat4 m_perpsective;
@@ -114,5 +116,7 @@ protected:
 		bool fcull;
 	};
 	optionFlags options;
+
+	std::stack<glm::mat4> matStack;
 
 };
