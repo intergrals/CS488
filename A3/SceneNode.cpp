@@ -53,6 +53,7 @@ SceneNode::~SceneNode() {
 void SceneNode::set_transform(const glm::mat4& m) {
 	trans = m;
 	invtrans = m;
+	rotTrans = glm::mat4(1.0f);
 }
 
 //---------------------------------------------------------------------------------------
@@ -94,6 +95,7 @@ void SceneNode::rotate(char axis, float angle) {
 	}
 	mat4 rot_matrix = glm::rotate(degreesToRadians(angle), rot_axis);
 	trans = rot_matrix * trans;
+	rotTrans = rot_matrix * rotTrans;
 }
 
 //---------------------------------------------------------------------------------------
@@ -134,4 +136,10 @@ std::ostream & operator << (std::ostream & os, const SceneNode & node) {
 	os << "]";
 
 	return os;
+}
+
+
+void SceneNode::resetRot() {
+    trans = glm::inverse( rotTrans ) * trans;
+    rotTrans = glm::mat4(1.0f);
 }

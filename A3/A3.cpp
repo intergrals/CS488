@@ -116,9 +116,25 @@ void A3::reset( resetTypes r ) {
 		for ( double &i : c_loc ) i = 0.0f;
         updateViewMatrix();
 	}
+	if( r== A || r == O ) {
+        resetTransform( *m_rootNode );
+        xRot = 0.0f;
+        yRot = 0.0f;
+	}
 
 	mode = P;
 
+}
+
+//----------------------------------------------------------------------------------------
+void A3::resetTransform(SceneNode &node) {
+
+    for ( SceneNode * n : node.children ) {
+        //n->rotate( 'y', -xRot );
+        //n->rotate( 'x', -yRot );
+        n->resetRot();
+
+    }
 }
 
 //----------------------------------------------------------------------------------------
@@ -621,6 +637,16 @@ bool A3::mouseMoveEvent (
 			eventHandled = true;
 		}
 		if (rmb) {
+		    auto rotXAmt = (float) changeX / m_windowWidth * 360;
+            auto rotYAmt = (float) changeY / m_windowHeight * 360;
+
+            for ( SceneNode * node : m_rootNode->children ) {
+                node->rotate('y', rotXAmt);
+                node->rotate('x', rotYAmt);
+
+                xRot += rotXAmt;
+                yRot += rotYAmt;
+            }
 
 			eventHandled = true;
 		}

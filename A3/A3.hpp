@@ -62,6 +62,7 @@ protected:
 	 * My additional methods
 	 */
 	void reset( resetTypes r );
+	void resetTransform( SceneNode &node );
 	void updateViewMatrix();
 	void renderJoint( const SceneNode &n );
 
@@ -116,6 +117,8 @@ protected:
 		bool fcull;
 	};
 	optionFlags options;
+
+	float xRot, yRot;
 
 	std::stack<glm::mat4> matStack;
 

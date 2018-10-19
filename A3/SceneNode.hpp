@@ -9,6 +9,7 @@
 #include <list>
 #include <string>
 #include <iostream>
+#include <stack>
 
 enum class NodeType {
 	SceneNode,
@@ -40,6 +41,8 @@ public:
     void scale(const glm::vec3& amount);
     void translate(const glm::vec3& amount);
 
+    void resetRot();
+
 
 	friend std::ostream & operator << (std::ostream & os, const SceneNode & node);
 
@@ -48,12 +51,17 @@ public:
     // Transformations
     glm::mat4 trans;
     glm::mat4 invtrans;
+    glm::mat4 rotTrans;
     
     std::list<SceneNode*> children;
 
 	NodeType m_nodeType;
 	std::string m_name;
 	unsigned int m_nodeId;
+
+    std::stack<glm::mat4> undoStack;
+    std::stack<glm::mat4> redoStack;
+
 
 
 private:
