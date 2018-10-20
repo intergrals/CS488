@@ -497,11 +497,24 @@ static void updateShaderUniforms(
  */
 void A3::draw() {
 
-	glEnable( GL_DEPTH_TEST );
+    // depth buffering if enabled
+	if( options.zbuff ) glEnable( GL_DEPTH_TEST );
+
+	// cull front and back if enabled
+	if( options.fcull && options.bcull ) {
+        glEnable( GL_CULL_FACE );
+        glCullFace( GL_FRONT_AND_BACK );
+    } else if ( options.fcull ) {
+	        glEnable( GL_CULL_FACE );
+	        glCullFace( GL_FRONT );
+	} else if( options.bcull ) {
+        glEnable( GL_CULL_FACE );
+	    glCullFace( GL_BACK );
+	}
 	renderSceneGraph(*m_rootNode);
 
-
-	glDisable( GL_DEPTH_TEST );
+    if( options.fcull || options.bcull ) glDisable( GL_DEPTH_TEST );
+    if( options.zbuff ) glDisable( GL_DEPTH_TEST );
 	renderArcCircle();
 }
 
