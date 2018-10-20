@@ -63,6 +63,7 @@ protected:
 	 */
 	void reset( resetTypes r );
 	void resetTransform( SceneNode &node );
+    void initRotation( SceneNode &node );
 	void updateViewMatrix();
 	void renderJoint( const SceneNode &n );
 
@@ -108,6 +109,7 @@ protected:
 	// mouse down flags
 	bool lmb, mmb, rmb;
 	double lastX, lastY;
+	double cLastX, cLastY;
 
 	// options fields
 	struct optionFlags {

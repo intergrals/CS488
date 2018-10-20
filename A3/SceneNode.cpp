@@ -139,7 +139,12 @@ std::ostream & operator << (std::ostream & os, const SceneNode & node) {
 }
 
 
+void SceneNode::initRotMat() {
+    rotTrans = glm::mat4(1.0f);
+}
+
+
 void SceneNode::resetRot() {
     trans = glm::inverse( rotTrans ) * trans;
-    rotTrans = glm::mat4(1.0f);
+    initRotMat();
 }

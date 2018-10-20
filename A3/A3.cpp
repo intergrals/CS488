@@ -64,6 +64,8 @@ void A3::init()
 
 	processLuaSceneFile(m_luaSceneFile);
 
+	initRotation( *m_rootNode );
+
 	// Load and decode all .obj files at once here.  You may add additional .obj files to
 	// this list in order to support rendering additional mesh types.  All vertex
 	// positions, and normals will be extracted and stored within the MeshConsolidator
@@ -92,6 +94,8 @@ void A3::init()
 
 	lastX = 0.0f;
 	lastY = 0.0f;
+	cLastX = 0.0f;
+	cLastY = 0.0f;
 
 	options = optionFlags{ false, true, false, false };
 	// END NOTE
@@ -127,7 +131,7 @@ void A3::reset( resetTypes r ) {
 }
 
 //----------------------------------------------------------------------------------------
-void A3::resetTransform(SceneNode &node) {
+void A3::resetTransform( SceneNode &node ) {
 
     for ( SceneNode * n : node.children ) {
         //n->rotate( 'y', -xRot );
@@ -136,6 +140,15 @@ void A3::resetTransform(SceneNode &node) {
 
     }
 }
+
+//----------------------------------------------------------------------------------------
+void A3::initRotation( SceneNode &node ) {
+	node.initRotMat();
+	for ( SceneNode * n : node.children ) {
+		initRotation( *n );
+	}
+}
+
 
 //----------------------------------------------------------------------------------------
 void A3::processLuaSceneFile(const std::string & filename) {
@@ -515,7 +528,8 @@ void A3::draw() {
 
     if( options.fcull || options.bcull ) glDisable( GL_DEPTH_TEST );
     if( options.zbuff ) glDisable( GL_DEPTH_TEST );
-	renderArcCircle();
+
+	if( options.circle ) renderArcCircle();
 }
 
 //
@@ -632,6 +646,20 @@ bool A3::mouseMoveEvent (
 	double changeX = xPos - lastX;
 	double changeY = yPos - lastY;
 
+    // Change of coordinates of mouse location.
+    double relX, relY;
+    if( m_windowHeight < m_windowWidth ) {
+        double clippedX = xPos - ( m_windowWidth - m_windowHeight ) / 2.0f;
+
+        relX = ( clippedX - m_windowHeight / 2.0f ) / m_windowHeight * 4;
+        relY = ( yPos - m_windowHeight / 2.0f ) / m_windowHeight * 4;
+    } else {
+        double clippedY = yPos - ( m_windowHeight - m_windowWidth ) / 2.0f;
+
+        relX = ( xPos - m_windowWidth / 2.0f ) / m_windowWidth * 4;
+        relY = ( clippedY - m_windowWidth / 2.0f ) / m_windowWidth * 4;
+    }
+
 	if( mode == P && ( lmb || mmb || rmb ) ) {
 		if (lmb) {
 			double deltaX = -changeX / CS488Window::m_windowWidth * 5;
@@ -650,24 +678,49 @@ bool A3::mouseMoveEvent (
 			eventHandled = true;
 		}
 		if (rmb) {
-		    auto rotXAmt = (float) changeX / m_windowWidth * 360;
-            auto rotYAmt = (float) changeY / m_windowHeight * 360;
 
-            for ( SceneNode * node : m_rootNode->children ) {
-                node->rotate('y', rotXAmt);
-                node->rotate('x', rotYAmt);
+            double m_Z = 1.0f - relX * relX - relY * relY;
 
-                xRot += rotXAmt;
-                yRot += rotYAmt;
+            if( m_Z > 0 ) {
+                int minAspect = glm::min( m_windowWidth, m_windowHeight );
+
+                auto rotXAmt = (float) changeX / minAspect * 360 * 2;
+                auto rotYAmt = (float) changeY / minAspect * 360 * 2;
+
+                for (SceneNode *node : m_rootNode->children) {
+                    node->rotate('y', rotXAmt);
+                    node->rotate('x', rotYAmt);
+
+                    xRot += rotXAmt;
+                    yRot += rotYAmt;
+                }
+            } else {
+                glm::vec3 lastPos( cLastX, cLastY, 0 );
+                glm::vec3 curPos( relX, relY, 0 );
+                float rotZAmt = glm::length( glm::cross( lastPos, curPos ) ) / ( glm::length( lastPos ) * glm::length( curPos ) );
+                rotZAmt = glm::degrees( glm::asin( rotZAmt ) );
+
+                if( glm::cross( lastPos, curPos ).z > 0 ) rotZAmt *= -1;
+
+                for (SceneNode *node : m_rootNode->children) {
+                    node->rotate('z', rotZAmt );
+
+                    //xRot += rotXAmt;
+                }
             }
+
 
 			eventHandled = true;
 		}
 		updateViewMatrix();
 	}
 
+	// update previous mouse positions
 	lastX = xPos;
 	lastY = yPos;
+
+    cLastX = relX;
+    cLastY = relY;
 
 	return eventHandled;
 }

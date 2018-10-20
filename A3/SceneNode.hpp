@@ -41,6 +41,7 @@ public:
     void scale(const glm::vec3& amount);
     void translate(const glm::vec3& amount);
 
+    void initRotMat();
     void resetRot();
 
 
