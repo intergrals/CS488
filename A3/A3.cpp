@@ -120,13 +120,15 @@ void A3::reset( resetTypes r ) {
 		for ( double &i : c_loc ) i = 0.0f;
         updateViewMatrix();
 	}
-	if( r== A || r == O ) {
+	if( r == A || r == O ) {
         resetTransform( *m_rootNode );
         xRot = 0.0f;
         yRot = 0.0f;
 	}
-
-	mode = P;
+	if( r == A || r == S ) {
+		resetJoints( *m_rootNode );
+	}
+    if( r == A ) mode = P;
 
 }
 
@@ -552,23 +554,67 @@ void A3::renderJoint( const SceneNode &n ) {
 
     for (const SceneNode * node : n.children) {
 
-        if (node->m_nodeType != NodeType::GeometryNode)
-            continue;
+        if (node->m_nodeType == NodeType::GeometryNode) {
 
-        const GeometryNode * geometryNode = static_cast<const GeometryNode *>(node);
+            const GeometryNode *geometryNode = static_cast<const GeometryNode *>(node);
 
-        updateShaderUniforms( m_shader, *geometryNode, matStack.top() );
+            updateShaderUniforms(m_shader, *geometryNode, matStack.top());
 
-        // Get the BatchInfo corresponding to the GeometryNode's unique MeshId.
-        BatchInfo batchInfo = m_batchInfoMap[geometryNode->meshId];
+            // Get the BatchInfo corresponding to the GeometryNode's unique MeshId.
+            BatchInfo batchInfo = m_batchInfoMap[geometryNode->meshId];
 
-        //-- Now render the mesh:
-        m_shader.enable();
-        glDrawArrays(GL_TRIANGLES, batchInfo.startIndex, batchInfo.numIndices);
-        m_shader.disable();
+            //-- Now render the mesh:
+            m_shader.enable();
+            glDrawArrays(GL_TRIANGLES, batchInfo.startIndex, batchInfo.numIndices);
+            m_shader.disable();
 
-        renderJoint( *node );
+            renderJoint(*node);
+        } else if (node->m_nodeType == NodeType::JointNode) {
+            const JointNode *jointNode = static_cast<const JointNode *>(node);
 
+            // shader update
+            m_shader.enable();
+            {
+                //-- Set ModelView matrix:
+                GLint location = m_shader.getUniformLocation("ModelView");
+                mat4 modelView = matStack.top() * jointNode->trans;
+                glUniformMatrix4fv(location, 1, GL_FALSE, value_ptr(modelView));
+                CHECK_GL_ERRORS;
+
+                //-- Set NormMatrix:
+                location = m_shader.getUniformLocation("NormalMatrix");
+                mat3 normalMatrix = glm::transpose(glm::inverse(mat3(modelView)));
+                glUniformMatrix3fv(location, 1, GL_FALSE, value_ptr(normalMatrix));
+                CHECK_GL_ERRORS;
+
+
+                //-- Set Material values:
+                location = m_shader.getUniformLocation("material.kd");
+                vec3 kd = jointNode->material.kd;
+                glUniform3fv(location, 1, value_ptr(kd));
+                CHECK_GL_ERRORS;
+                location = m_shader.getUniformLocation("material.ks");
+                vec3 ks = jointNode->material.ks;
+                glUniform3fv(location, 1, value_ptr(ks));
+                CHECK_GL_ERRORS;
+                location = m_shader.getUniformLocation("material.shininess");
+                glUniform1f(location, jointNode->material.shininess);
+                CHECK_GL_ERRORS;
+
+            }
+            m_shader.disable();
+            // end shader update
+
+            // Get the BatchInfo corresponding to the GeometryNode's unique MeshId.
+            BatchInfo batchInfo = m_batchInfoMap[jointNode->meshId];
+
+            //-- Now render the mesh:
+            m_shader.enable();
+            glDrawArrays(GL_TRIANGLES, batchInfo.startIndex, batchInfo.numIndices);
+            m_shader.disable();
+
+            renderJoint(*node);
+        }
     }
 
     matStack.pop();
@@ -606,6 +652,34 @@ void A3::renderArcCircle() {
 
 	glBindVertexArray(0);
 	CHECK_GL_ERRORS;
+}
+
+//----------------------------------------------------------------------------------------
+// Rotate all selected joints
+void A3::rotateJoints( SceneNode &node, double rotAmt ) {
+	// TEST rotate
+	for ( SceneNode * n : node.children ) {
+		if ( n->m_nodeType == NodeType::JointNode ) {
+			JointNode *jointNode = static_cast<JointNode *>(n);
+			jointNode->joint_rotate( 'x', (float)rotAmt );
+		}
+
+		rotateJoints( *n, rotAmt );
+	}
+}
+
+//----------------------------------------------------------------------------------------
+// Reset all joints
+void A3::resetJoints( SceneNode &node ) {
+	// TODO: Change x to whatever axis joint rotates on
+	for ( SceneNode * n : node.children ) {
+		if ( n->m_nodeType == NodeType::JointNode ) {
+			JointNode *jointNode = static_cast<JointNode *>(n);
+			jointNode->joint_rotate( 'x', (float) ( jointNode->m_joint_x.init - jointNode->xCurRot ) );
+		}
+
+		resetJoints( *n );
+	}
 }
 
 //----------------------------------------------------------------------------------------
@@ -713,6 +787,14 @@ bool A3::mouseMoveEvent (
 			eventHandled = true;
 		}
 		updateViewMatrix();
+	} else if( mode == J && ( lmb || mmb || rmb ) ) {
+	    if (lmb) {
+	        // TODO: implement selection
+	    } else if (mmb) {
+			auto rotAmt = (float) changeY / m_windowHeight * 180;
+
+			rotateJoints( *m_rootNode, rotAmt );
+	    }
 	}
 
 	// update previous mouse positions

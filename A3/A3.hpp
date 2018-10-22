@@ -63,9 +63,11 @@ protected:
 	 */
 	void reset( resetTypes r );
 	void resetTransform( SceneNode &node );
+	void resetJoints( SceneNode &node );
     void initRotation( SceneNode &node );
 	void updateViewMatrix();
 	void renderJoint( const SceneNode &n );
+    void rotateJoints( SceneNode &node, double rotAmt );
 
 
 	glm::mat4 m_perpsective;

@@ -38,6 +38,7 @@ public:
 
 	//-- Transformations:
     void rotate(char axis, float angle);
+    void jrotate(char axis, float angle);
     void scale(const glm::vec3& amount);
     void translate(const glm::vec3& amount);
 
