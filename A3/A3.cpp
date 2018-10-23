@@ -14,6 +14,7 @@ using namespace std;
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/io.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <random>
 
 using namespace glm;
 
@@ -98,7 +99,15 @@ void A3::init()
 	cLastY = 0.0f;
 
 	options = optionFlags{ false, true, false, false };
-	// END NOTE
+
+    initPerspectiveMatrix();
+
+    initViewMatrix();
+
+    initLightSources();
+
+    do_picking = false;
+    // END NOTE
 
 	reset( A );
 
@@ -336,32 +345,36 @@ void A3::initLightSources() {
 
 //----------------------------------------------------------------------------------------
 void A3::uploadCommonSceneUniforms() {
-	m_shader.enable();
-	{
-		//-- Set Perpsective matrix uniform for the scene:
-		GLint location = m_shader.getUniformLocation("Perspective");
-		glUniformMatrix4fv(location, 1, GL_FALSE, value_ptr(m_perpsective));
-		CHECK_GL_ERRORS;
+    m_shader.enable();
+    {
+        //-- Set Perpsective matrix uniform for the scene:
+        GLint location = m_shader.getUniformLocation("Perspective");
+        glUniformMatrix4fv(location, 1, GL_FALSE, value_ptr(m_perpsective));
+        CHECK_GL_ERRORS;
 
+        location = m_shader.getUniformLocation("picking");
+        glUniform1i( location, do_picking ? 1 : 0 );
 
-		//-- Set LightSource uniform for the scene:
-		{
-			location = m_shader.getUniformLocation("light.position");
-			glUniform3fv(location, 1, value_ptr(m_light.position));
-			location = m_shader.getUniformLocation("light.rgbIntensity");
-			glUniform3fv(location, 1, value_ptr(m_light.rgbIntensity));
-			CHECK_GL_ERRORS;
-		}
+        if( !do_picking ) {
+            //-- Set LightSource uniform for the scene:
+            {
+                location = m_shader.getUniformLocation("light.position");
+                glUniform3fv(location, 1, value_ptr(m_light.position));
+                location = m_shader.getUniformLocation("light.rgbIntensity");
+                glUniform3fv(location, 1, value_ptr(m_light.rgbIntensity));
+                CHECK_GL_ERRORS;
+            }
 
-		//-- Set background light ambient intensity
-		{
-			location = m_shader.getUniformLocation("ambientIntensity");
-			vec3 ambientIntensity(0.05f);
-			glUniform3fv(location, 1, value_ptr(ambientIntensity));
-			CHECK_GL_ERRORS;
-		}
-	}
-	m_shader.disable();
+            //-- Set background light ambient intensity
+            {
+                location = m_shader.getUniformLocation("ambientIntensity");
+                vec3 ambientIntensity(0.05f);
+                glUniform3fv(location, 1, value_ptr(ambientIntensity));
+                CHECK_GL_ERRORS;
+            }
+        }
+    }
+    m_shader.disable();
 }
 
 //----------------------------------------------------------------------------------------
@@ -467,14 +480,27 @@ void A3::guiLogic()
 
 //----------------------------------------------------------------------------------------
 // Update mesh specific shader uniforms:
-static void updateShaderUniforms(
+void A3::updateShaderUniforms(
 		const ShaderProgram & shader,
 		const GeometryNode & node,
 		const glm::mat4 & viewMatrix
 ) {
 
 	shader.enable();
-	{
+    if( do_picking ) {
+		//-- Set ModelView matrix:
+		GLint location = m_shader.getUniformLocation("ModelView");
+		mat4 modelView = viewMatrix * node.trans;
+		glUniformMatrix4fv(location, 1, GL_FALSE, value_ptr(modelView));
+
+        float r = float(   node.m_nodeId         & 0xff ) / 255.0f;
+        float g = float( ( node.m_nodeId >> 8 )  & 0xff ) / 255.0f;
+        float b = float( ( node.m_nodeId >> 16 ) & 0xff ) / 255.0f;
+
+        location = m_shader.getUniformLocation("material.kd");
+        glUniform3f( location, r, g, b );
+        CHECK_GL_ERRORS;
+    } else {
 		//-- Set ModelView matrix:
 		GLint location = shader.getUniformLocation("ModelView");
 		mat4 modelView = viewMatrix * node.trans;
@@ -491,11 +517,15 @@ static void updateShaderUniforms(
 		//-- Set Material values:
 		location = shader.getUniformLocation("material.kd");
 		vec3 kd = node.material.kd;
-		glUniform3fv(location, 1, value_ptr(kd));
+
+		// TODO: Change this color back to red.
+		if( node.isSelected ) glUniform3fv(location, 1, value_ptr( vec3( 1.0f, 1.0f, 0.0f ) ) );
+		else glUniform3fv(location, 1, value_ptr(kd));
 		CHECK_GL_ERRORS;
 		location = shader.getUniformLocation("material.ks");
 		vec3 ks = node.material.ks;
-		glUniform3fv(location, 1, value_ptr(ks));
+		if( node.isSelected ) glUniform3fv( location, 1, value_ptr( vec3( 0.0f, 0.0f, 0.0f ) ) );
+		else glUniform3fv(location, 1, value_ptr(ks));
 		CHECK_GL_ERRORS;
 		location = shader.getUniformLocation("material.shininess");
 		glUniform1f(location, node.material.shininess);
@@ -535,7 +565,7 @@ void A3::draw() {
 }
 
 //
-void A3::renderJoint( const SceneNode &n ) {
+void A3::renderNode( const SceneNode &n ) {
 
     // This is emphatically *not* how you should be drawing the scene graph in
     // your final implementation.  This is a non-hierarchical demonstration
@@ -568,52 +598,13 @@ void A3::renderJoint( const SceneNode &n ) {
             glDrawArrays(GL_TRIANGLES, batchInfo.startIndex, batchInfo.numIndices);
             m_shader.disable();
 
-            renderJoint(*node);
+            renderNode(*node);
         } else if (node->m_nodeType == NodeType::JointNode) {
             const JointNode *jointNode = static_cast<const JointNode *>(node);
 
-            // shader update
-            m_shader.enable();
-            {
-                //-- Set ModelView matrix:
-                GLint location = m_shader.getUniformLocation("ModelView");
-                mat4 modelView = matStack.top() * jointNode->trans;
-                glUniformMatrix4fv(location, 1, GL_FALSE, value_ptr(modelView));
-                CHECK_GL_ERRORS;
+            mat4 modelView = matStack.top() * jointNode->trans;
 
-                //-- Set NormMatrix:
-                location = m_shader.getUniformLocation("NormalMatrix");
-                mat3 normalMatrix = glm::transpose(glm::inverse(mat3(modelView)));
-                glUniformMatrix3fv(location, 1, GL_FALSE, value_ptr(normalMatrix));
-                CHECK_GL_ERRORS;
-
-
-                //-- Set Material values:
-                location = m_shader.getUniformLocation("material.kd");
-                vec3 kd = jointNode->material.kd;
-                glUniform3fv(location, 1, value_ptr(kd));
-                CHECK_GL_ERRORS;
-                location = m_shader.getUniformLocation("material.ks");
-                vec3 ks = jointNode->material.ks;
-                glUniform3fv(location, 1, value_ptr(ks));
-                CHECK_GL_ERRORS;
-                location = m_shader.getUniformLocation("material.shininess");
-                glUniform1f(location, jointNode->material.shininess);
-                CHECK_GL_ERRORS;
-
-            }
-            m_shader.disable();
-            // end shader update
-
-            // Get the BatchInfo corresponding to the GeometryNode's unique MeshId.
-            BatchInfo batchInfo = m_batchInfoMap[jointNode->meshId];
-
-            //-- Now render the mesh:
-            m_shader.enable();
-            glDrawArrays(GL_TRIANGLES, batchInfo.startIndex, batchInfo.numIndices);
-            m_shader.disable();
-
-            renderJoint(*node);
+            renderNode(*node);
         }
     }
 
@@ -625,12 +616,38 @@ void A3::renderSceneGraph(const SceneNode & root) {
     // Bind the VAO once here, and reuse for all GeometryNode rendering below.
     glBindVertexArray(m_vao_meshData);
 
-    renderJoint( root );
+    renderNode( root );
 
 
     glBindVertexArray(0);
     CHECK_GL_ERRORS;
 }
+
+//----------------------------------------------------------------------------------------
+void A3::updateNodePicking( SceneNode &n, int id ) {
+    //cout << n.m_name << " " << (n.m_nodeType == NodeType::JointNode) << endl;
+
+    if( n.m_nodeType != NodeType::JointNode ) {
+        for ( SceneNode * node : n.children ) {
+            updateNodePicking( *node, id );
+        }
+        return;
+    }
+
+    for ( SceneNode * node : n.children ) {
+
+        if( node->m_nodeId == id ) {
+
+            cout << n.m_name << " -> " << node->m_name << endl;
+
+            node->isSelected = !node->isSelected;
+            n.isSelected = node->isSelected;
+            return;
+        }
+        updateNodePicking( *node, id );
+    }
+}
+
 
 //----------------------------------------------------------------------------------------
 // Draw the trackball circle.
@@ -822,6 +839,54 @@ bool A3::mouseButtonInputEvent (
 	if( actions == GLFW_PRESS ) {
 		if( button == GLFW_MOUSE_BUTTON_LEFT ) {
 			lmb = true;
+
+            if( mode == J ) {
+                // Handle picking
+                double xpos, ypos;
+                glfwGetCursorPos(m_window, &xpos, &ypos);
+
+                do_picking = true;
+
+                uploadCommonSceneUniforms();
+                glClearColor(1.0, 1.0, 1.0, 1.0);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                glClearColor(0.85, 0.85, 0.85, 1.0);
+
+                draw();
+
+                // I don't know if these are really necessary anymore.
+                // glFlush();
+                // glFinish();
+
+                CHECK_GL_ERRORS;
+
+                // Ugly -- FB coordinates might be different than Window coordinates
+                // (e.g., on a retina display).  Must compensate.
+                xpos *= double(m_framebufferWidth) / double(m_windowWidth);
+                // WTF, don't know why I have to measure y relative to the bottom of
+                // the window in this case.
+                ypos = m_windowHeight - ypos;
+                ypos *= double(m_framebufferHeight) / double(m_windowHeight);
+
+                GLubyte buffer[4] = {0, 0, 0, 0};
+                // A bit ugly -- don't want to swap the just-drawn false colours
+                // to the screen, so read from the back buffer.
+                glReadBuffer(GL_BACK);
+                // Actually read the pixel at the mouse location.
+                glReadPixels(int(xpos), int(ypos), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+                CHECK_GL_ERRORS;
+
+                // Reassemble the object ID.
+                unsigned int what = buffer[0] + (buffer[1] << 8) + (buffer[2] << 16);
+
+                updateNodePicking(*m_rootNode, what);
+
+                do_picking = false;
+
+                CHECK_GL_ERRORS;
+            }
+
+
 			eventHandled = true;
 		} else if( button == GLFW_MOUSE_BUTTON_MIDDLE ) {
 			mmb = true;

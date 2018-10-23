@@ -18,6 +18,7 @@ struct LightSource {
 	glm::vec3 rgbIntensity;
 };
 
+class GeometryNode;
 
 class A3 : public CS488Window {
 public:
@@ -53,6 +54,11 @@ protected:
 	void renderSceneGraph(const SceneNode &node);
 	void renderArcCircle();
 
+    void updateShaderUniforms(
+            const ShaderProgram & shader,
+            const GeometryNode & node,
+            const glm::mat4 & viewMatrix
+    );
 
 	// define modes
 	enum resetTypes { I, O, S, A };
@@ -66,9 +72,9 @@ protected:
 	void resetJoints( SceneNode &node );
     void initRotation( SceneNode &node );
 	void updateViewMatrix();
-	void renderJoint( const SceneNode &n );
+	void renderNode( const SceneNode &n );
     void rotateJoints( SceneNode &node, double rotAmt );
-
+    void updateNodePicking( SceneNode &n, int id );
 
 	glm::mat4 m_perpsective;
 	glm::mat4 m_view;
@@ -125,5 +131,11 @@ protected:
 	float xRot, yRot;
 
 	std::stack<glm::mat4> matStack;
+
+	// GL resources for picking
+	bool do_picking;
+    std::vector<glm::mat4> xforms;
+    std::vector<glm::vec3> cols;
+    std::vector<bool> selected;
 
 };

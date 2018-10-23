@@ -9,13 +9,12 @@ JointNode::JointNode(const std::string& name)
 	m_nodeType = NodeType::JointNode;
 
 	//material = red;
-	meshId = "sphere";
+	//meshId = "sphere";
 
 	xCurRot = 0.0f;
 	yCurRot = 0.0f;
 
 	// TEST rotation
-	isSelected = true;
 }
 
 //---------------------------------------------------------------------------------------
