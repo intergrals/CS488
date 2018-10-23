@@ -415,8 +415,8 @@ void A3::guiLogic()
 
 
 		// Add more gui elements here here ...
-		string undoText = "[U]ndo (" /*+ to_string(undoAmt) + ")"*/;
-        string redoText = "[R]edo (" /*+ to_string(redoAmt) + ")"*/;
+		string undoText = "[U]ndo (" + to_string(undoAmt) + ")";
+        string redoText = "[R]edo (" + to_string(redoAmt) + ")";
 
         char uText[ undoText.length() + 1 ];
         for( int i = 0; i <= undoText.length(); i++ ) {
@@ -450,10 +450,10 @@ void A3::guiLogic()
 			}
 			if( ImGui::BeginMenu( "Edit" ) ) {
 				if( ImGui::MenuItem( uText ) ) {
-                    //undoJoints( *m_rootNode );
+                    undoJoints( *m_rootNode );
 				}
 				if( ImGui::MenuItem( rText ) ) {
-                    //redoJoints( *m_rootNode );
+                    redoJoints( *m_rootNode );
 				}
 				ImGui::EndMenu();
 			}
