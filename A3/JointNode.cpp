@@ -24,8 +24,8 @@ JointNode::~JointNode() {
 
 //---------------------------------------------------------------------------------------
 void JointNode::reset() {
-    jrotate( 'x', -(float) xCurRot );
-    jrotate( 'y', -(float) yCurRot );
+    jrotate( 'x', float ( m_joint_x.init - xCurRot ) );
+    jrotate( 'y', float ( m_joint_y.init - yCurRot ) );
 
     xCurRot = m_joint_x.init;
     yCurRot = m_joint_y.init;
@@ -59,7 +59,7 @@ void JointNode::set_joint_y(double min, double init, double max) {
 }
 
 void JointNode::joint_rotate(char axis, float angle) {
-	if ( !isSelected ) return;
+	//if ( !isSelected ) return;
 
 	if ( axis == 'x' ) {
 		if ( xCurRot + angle > m_joint_x.max || xCurRot + angle < m_joint_x.min ) return;
@@ -89,6 +89,9 @@ void JointNode::undo() {
 	    std::cout << "undo limit" << std::endl;
 	    return;
 	}
+
+	std::cout << undoStack.size() << std::endl;
+
 	// push current step to redo stack
     redoStack.push( angles{ xCurRot, yCurRot } );
 
@@ -110,6 +113,8 @@ void JointNode::redo() {
 	    std::cout << "redo limit" << std::endl;
         return;
 	}
+
+    std::cout << redoStack.size() << std::endl;
 
 	// push current step to undo stack
     undoStack.push( angles{ xCurRot, yCurRot } );

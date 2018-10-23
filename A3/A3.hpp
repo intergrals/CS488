@@ -141,4 +141,7 @@ protected:
     std::vector<glm::vec3> cols;
     std::vector<bool> selected;
 
+    // undo and redo fields
+    int undoAmt, redoAmt;
+
 };

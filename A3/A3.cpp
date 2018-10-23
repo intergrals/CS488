@@ -136,6 +136,8 @@ void A3::reset( resetTypes r ) {
 	}
 	if( r == A || r == S ) {
 		resetJoints( *m_rootNode );
+		undoAmt = 0;
+		redoAmt = 0;
 	}
     if( r == A ) mode = P;
 
@@ -405,7 +407,7 @@ void A3::guiLogic()
 	}
 
 	static bool showDebugWindow(true);
-	ImGuiWindowFlags windowFlags(ImGuiWindowFlags_AlwaysAutoResize + ImGuiWindowFlags_MenuBar );
+	ImGuiWindowFlags windowFlags(ImGuiWindowFlags_AlwaysAutoResize /*+ ImGuiWindowFlags_MenuBar*/ );
 	float opacity(0.5f);
 
 	ImGui::Begin("Properties", &showDebugWindow, ImVec2(100,100), opacity,
@@ -413,6 +415,18 @@ void A3::guiLogic()
 
 
 		// Add more gui elements here here ...
+		string undoText = "[U]ndo (" /*+ to_string(undoAmt) + ")"*/;
+        string redoText = "[R]edo (" /*+ to_string(redoAmt) + ")"*/;
+
+        char uText[ undoText.length() + 1 ];
+        for( int i = 0; i <= undoText.length(); i++ ) {
+            uText[i] = undoText[i];
+        }
+        char rText[ redoText.length() + 1 ];
+        for( int i = 0; i <= redoText.length(); i++ ) {
+            rText[i] = redoText[i];
+        }
+
 
 		// Menu bar items
 		if( ImGui::BeginMainMenuBar() ) {
@@ -435,11 +449,11 @@ void A3::guiLogic()
 				ImGui::EndMenu();
 			}
 			if( ImGui::BeginMenu( "Edit" ) ) {
-				if( ImGui::MenuItem( "[U]ndo" ) ) {
-                    undoJoints( *m_rootNode );
+				if( ImGui::MenuItem( uText ) ) {
+                    //undoJoints( *m_rootNode );
 				}
-				if( ImGui::MenuItem( "[R]edo" ) ) {
-                    redoJoints( *m_rootNode );
+				if( ImGui::MenuItem( rText ) ) {
+                    //redoJoints( *m_rootNode );
 				}
 				ImGui::EndMenu();
 			}
@@ -673,7 +687,7 @@ void A3::renderArcCircle() {
 void A3::rotateJoints( SceneNode &node, double rotAmt ) {
 	// TEST rotate
 	for ( SceneNode * n : node.children ) {
-		if ( n->m_nodeType == NodeType::JointNode ) {
+		if ( n->m_nodeType == NodeType::JointNode && n->isSelected ) {
 			JointNode *jointNode = static_cast<JointNode *>(n);
 			jointNode->joint_rotate( 'x', (float)rotAmt );
 		}
@@ -689,8 +703,10 @@ void A3::resetJoints( SceneNode &node ) {
 	for ( SceneNode * n : node.children ) {
 		if ( n->m_nodeType == NodeType::JointNode ) {
 			JointNode *jointNode = static_cast<JointNode *>(n);
-			jointNode->joint_rotate( 'x', (float) ( jointNode->m_joint_x.init - jointNode->xCurRot ) );
+			//jointNode->joint_rotate( 'x', (float) ( jointNode->m_joint_x.init - jointNode->xCurRot ) );
+			jointNode->reset();
 		}
+		n->isSelected = false;
 
 		resetJoints( *n );
 	}
@@ -704,6 +720,8 @@ void A3::stepJoints( SceneNode &node ) {
         if( n->m_nodeType == NodeType::JointNode ) {
             JointNode *jointNode = static_cast<JointNode *>(n);
             jointNode->step();
+            undoAmt = (int)jointNode->undoStack.size();
+            redoAmt = (int)jointNode->redoStack.size();
             cout << "step" << endl;
         }
         stepJoints( *n );
@@ -711,24 +729,28 @@ void A3::stepJoints( SceneNode &node ) {
 }
 
 //----------------------------------------------------------------------------------------
-// Step all joints
+// Undo all joints
 void A3::undoJoints(SceneNode &node) {
     for ( SceneNode * n : node.children ) {
         if( n->m_nodeType == NodeType::JointNode ) {
             JointNode *jointNode = static_cast<JointNode *>(n);
             jointNode->undo();
+            undoAmt = (int)jointNode->undoStack.size();
+            redoAmt = (int)jointNode->redoStack.size();
         }
         undoJoints( *n );
     }
 }
 
 //----------------------------------------------------------------------------------------
-// Step all joints
+// Redo all joints
 void A3::redoJoints(SceneNode &node) {
     for ( SceneNode * n : node.children ) {
         if( n->m_nodeType == NodeType::JointNode ) {
             JointNode *jointNode = static_cast<JointNode *>(n);
             jointNode->redo();
+            undoAmt = (int)jointNode->undoStack.size();
+            redoAmt = (int)jointNode->redoStack.size();
         }
         redoJoints( *n );
     }

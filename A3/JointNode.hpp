@@ -19,7 +19,6 @@ public:
     void step();
     void undo();
     void redo();
-    void fullUndo();
 
 	struct JointRange {
 		double min, init, max;
