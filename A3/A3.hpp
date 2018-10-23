@@ -75,6 +75,9 @@ protected:
 	void renderNode( const SceneNode &n );
     void rotateJoints( SceneNode &node, double rotAmt );
     void updateNodePicking( SceneNode &n, int id );
+    void stepJoints( SceneNode &node );
+    void undoJoints( SceneNode &node );
+    void redoJoints( SceneNode &node );
 
 	glm::mat4 m_perpsective;
 	glm::mat4 m_view;

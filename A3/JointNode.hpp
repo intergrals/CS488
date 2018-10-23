@@ -4,6 +4,8 @@
 
 #include "SceneNode.hpp"
 
+#include <stack>
+
 class JointNode : public SceneNode {
 public:
 	JointNode(const std::string & name);
@@ -14,9 +16,17 @@ public:
 
     void reset();
     void joint_rotate(char axis, float angle);
+    void step();
+    void undo();
+    void redo();
+    void fullUndo();
 
 	struct JointRange {
 		double min, init, max;
+	};
+
+	struct angles {
+	    double x, y;
 	};
 
 
@@ -26,4 +36,8 @@ public:
     std::string meshId;
 
     double xCurRot, yCurRot;
+
+    //undo redo stack
+	std::stack<angles> undoStack;
+	std::stack<angles> redoStack;
 };

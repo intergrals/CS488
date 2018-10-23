@@ -9,7 +9,6 @@
 #include <list>
 #include <string>
 #include <iostream>
-#include <stack>
 
 enum class NodeType {
 	SceneNode,
@@ -60,9 +59,6 @@ public:
 	NodeType m_nodeType;
 	std::string m_name;
 	unsigned int m_nodeId;
-
-    std::stack<glm::mat4> undoStack;
-    std::stack<glm::mat4> redoStack;
 
 
 

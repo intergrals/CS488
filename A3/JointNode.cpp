@@ -29,6 +29,13 @@ void JointNode::reset() {
 
     xCurRot = m_joint_x.init;
     yCurRot = m_joint_y.init;
+
+    while( !undoStack.empty() ) {
+    	undoStack.pop();
+    }
+	while( !redoStack.empty() ) {
+		redoStack.pop();
+	}
 }
 
 //---------------------------------------------------------------------------------------
@@ -63,4 +70,58 @@ void JointNode::joint_rotate(char axis, float angle) {
 	}
 
 	jrotate( axis, angle );
+}
+
+//---------------------------------------------------------------------------------------
+void JointNode::step() {
+	// push current transformation matrix onto stack.
+    undoStack.push( angles{ xCurRot, yCurRot } );
+
+    // clear redo stack.
+    while ( !redoStack.empty() ) {
+    	redoStack.pop();
+    }
+}
+
+void JointNode::undo() {
+	// undo 1 step
+	if( undoStack.empty() ) {
+	    std::cout << "undo limit" << std::endl;
+	    return;
+	}
+	// push current step to redo stack
+    redoStack.push( angles{ xCurRot, yCurRot } );
+
+	// undo
+	if( undoStack.top().x - xCurRot != 0 ) {
+	    joint_rotate( 'x', float( undoStack.top().x - xCurRot ) );
+	}
+    if( undoStack.top().y - yCurRot != 0 ) {
+        joint_rotate( 'y', float( undoStack.top().y - yCurRot ) );
+    }
+
+    // remove step from undo stack
+	undoStack.pop();
+}
+
+void JointNode::redo() {
+	// redo 1 step
+	if( redoStack.empty() ) {
+	    std::cout << "redo limit" << std::endl;
+        return;
+	}
+
+	// push current step to undo stack
+    undoStack.push( angles{ xCurRot, yCurRot } );
+
+    // redo
+    if( redoStack.top().x - xCurRot != 0 ) {
+        joint_rotate( 'x', float( redoStack.top().x - xCurRot ) );
+    }
+    if( redoStack.top().y - yCurRot != 0 ) {
+        joint_rotate( 'y', float( redoStack.top().y - yCurRot ) );
+    }
+
+	// remove step from redo stack
+	redoStack.pop();
 }

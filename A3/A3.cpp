@@ -415,7 +415,7 @@ void A3::guiLogic()
 		// Add more gui elements here here ...
 
 		// Menu bar items
-		if( ImGui::BeginMenuBar() ) {
+		if( ImGui::BeginMainMenuBar() ) {
 			if( ImGui::BeginMenu( "Application" ) ) {
 				if( ImGui::MenuItem( "Reset Pos[i]tion" ) ) {
 					reset( I );
@@ -436,10 +436,10 @@ void A3::guiLogic()
 			}
 			if( ImGui::BeginMenu( "Edit" ) ) {
 				if( ImGui::MenuItem( "[U]ndo" ) ) {
-
+                    undoJoints( *m_rootNode );
 				}
 				if( ImGui::MenuItem( "[R]edo" ) ) {
-
+                    redoJoints( *m_rootNode );
 				}
 				ImGui::EndMenu();
 			}
@@ -458,7 +458,7 @@ void A3::guiLogic()
 				}
 				ImGui::EndMenu();
 			}
-			ImGui::EndMenuBar();
+			ImGui::EndMainMenuBar();
 		}
 
 		// Radio buttons to select mode
@@ -625,7 +625,6 @@ void A3::renderSceneGraph(const SceneNode & root) {
 
 //----------------------------------------------------------------------------------------
 void A3::updateNodePicking( SceneNode &n, int id ) {
-    //cout << n.m_name << " " << (n.m_nodeType == NodeType::JointNode) << endl;
 
     if( n.m_nodeType != NodeType::JointNode ) {
         for ( SceneNode * node : n.children ) {
@@ -637,8 +636,6 @@ void A3::updateNodePicking( SceneNode &n, int id ) {
     for ( SceneNode * node : n.children ) {
 
         if( node->m_nodeId == id ) {
-
-            cout << n.m_name << " -> " << node->m_name << endl;
 
             node->isSelected = !node->isSelected;
             n.isSelected = node->isSelected;
@@ -697,6 +694,44 @@ void A3::resetJoints( SceneNode &node ) {
 
 		resetJoints( *n );
 	}
+}
+
+//----------------------------------------------------------------------------------------
+// Step all joints
+void A3::stepJoints( SceneNode &node ) {
+
+    for ( SceneNode * n : node.children ) {
+        if( n->m_nodeType == NodeType::JointNode ) {
+            JointNode *jointNode = static_cast<JointNode *>(n);
+            jointNode->step();
+            cout << "step" << endl;
+        }
+        stepJoints( *n );
+    }
+}
+
+//----------------------------------------------------------------------------------------
+// Step all joints
+void A3::undoJoints(SceneNode &node) {
+    for ( SceneNode * n : node.children ) {
+        if( n->m_nodeType == NodeType::JointNode ) {
+            JointNode *jointNode = static_cast<JointNode *>(n);
+            jointNode->undo();
+        }
+        undoJoints( *n );
+    }
+}
+
+//----------------------------------------------------------------------------------------
+// Step all joints
+void A3::redoJoints(SceneNode &node) {
+    for ( SceneNode * n : node.children ) {
+        if( n->m_nodeType == NodeType::JointNode ) {
+            JointNode *jointNode = static_cast<JointNode *>(n);
+            jointNode->redo();
+        }
+        redoJoints( *n );
+    }
 }
 
 //----------------------------------------------------------------------------------------
@@ -890,6 +925,9 @@ bool A3::mouseButtonInputEvent (
 			eventHandled = true;
 		} else if( button == GLFW_MOUSE_BUTTON_MIDDLE ) {
 			mmb = true;
+
+			if( mode == J ) stepJoints( *m_rootNode );
+
 			eventHandled = true;
 		} else if( button == GLFW_MOUSE_BUTTON_RIGHT ) {
 			rmb = true;
@@ -987,6 +1025,12 @@ bool A3::keyInputEvent (
 		} else if( key == GLFW_KEY_F ) {
 			options.fcull = !options.fcull;
 			eventHandled = true;
+		} else if( key == GLFW_KEY_U ) {
+		    undoJoints( *m_rootNode );
+		    eventHandled = true;
+		} else if( key == GLFW_KEY_R ) {
+		    redoJoints( *m_rootNode );
+		    eventHandled = true;
 		}
 	}
 	// Fill in with event handling code...
