@@ -24,7 +24,7 @@ leftHip:scale(0.21, 0.21, 0.21)
 leftHip:translate(-0.38, -0.5, 0.0)
 leftHip:set_material(blue)
 
-leftHipJoint = gr.joint('leftHipJoint', { 0, 45, 90 }, {-90, 0, 90})
+leftHipJoint = gr.joint('leftHipJoint', { -45, 0, 0 }, {0, 0, 90})
 leftHip:add_child(leftHipJoint)
 --leftHipJoint:scale(1/0.5,1.0,1/0.5);
 --leftHipJoint:scale(0.21, 0.21, 0.21)

@@ -137,6 +137,7 @@ protected:
 
 	// GL resources for picking
 	bool do_picking;
+	bool nothing_selected;
     std::vector<glm::mat4> xforms;
     std::vector<glm::vec3> cols;
     std::vector<bool> selected;

@@ -26,7 +26,10 @@ SceneNode::SceneNode(const std::string& name)
 	isSelected(false),
 	m_nodeId(nodeInstanceCount++)
 {
-
+    initTrans = glm::mat4(1.0f);
+    rotJTrans = glm::mat4(1.0f);
+    scaleTrans = glm::mat4(1.0f);
+    transTrans = glm::mat4(1.0f);
 }
 
 //---------------------------------------------------------------------------------------
@@ -96,6 +99,7 @@ void SceneNode::rotate(char axis, float angle) {
 	mat4 rot_matrix = glm::rotate(degreesToRadians(angle), rot_axis);
 	trans = rot_matrix * trans;
 	rotTrans = rot_matrix * rotTrans;
+    //trans = transTrans * rotJTrans * rotTrans * scaleTrans;
 }
 
 //---------------------------------------------------------------------------------------
@@ -117,17 +121,22 @@ void SceneNode::jrotate(char axis, float angle) {
     }
     mat4 rot_matrix = glm::rotate(degreesToRadians(angle), rot_axis);
     trans = trans * rot_matrix;
-    //rotTrans = rot_matrix * rotTrans;
+    //rotJTrans = rot_matrix * rotJTrans;
+    //trans = transTrans * rotJTrans * rotTrans * scaleTrans;
 }
 
 //---------------------------------------------------------------------------------------
 void SceneNode::scale(const glm::vec3 & amount) {
 	trans = glm::scale(amount) * trans;
+	//scaleTrans = glm::scale(amount) * scaleTrans;
+	//trans = transTrans * rotJTrans * rotTrans * scaleTrans;
 }
 
 //---------------------------------------------------------------------------------------
 void SceneNode::translate(const glm::vec3& amount) {
 	trans = glm::translate(amount) * trans;
+    //transTrans = glm::translate(amount) * transTrans;
+    //trans = transTrans * rotJTrans * rotTrans * scaleTrans;
 }
 
 
@@ -163,10 +172,14 @@ std::ostream & operator << (std::ostream & os, const SceneNode & node) {
 
 void SceneNode::initRotMat() {
     rotTrans = glm::mat4(1.0f);
+    //initTrans = rotTrans;
+    //trans = transTrans * rotJTrans * rotTrans * scaleTrans;
 }
 
 
 void SceneNode::resetRot() {
     trans = glm::inverse( rotTrans ) * trans;
+    rotTrans = glm::mat4(1.0f);
+    //trans = transTrans * rotJTrans * rotTrans * scaleTrans;
     initRotMat();
 }

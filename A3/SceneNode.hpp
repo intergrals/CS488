@@ -52,7 +52,11 @@ public:
     // Transformations
     glm::mat4 trans;
     glm::mat4 invtrans;
+    glm::mat4 initTrans;
     glm::mat4 rotTrans;
+    glm::mat4 rotJTrans;
+    glm::mat4 scaleTrans;
+    glm::mat4 transTrans;
     
     std::list<SceneNode*> children;
 

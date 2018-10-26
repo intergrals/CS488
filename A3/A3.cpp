@@ -74,7 +74,20 @@ void A3::init()
 	unique_ptr<MeshConsolidator> meshConsolidator (new MeshConsolidator{
 			getAssetFilePath("cube.obj"),
 			getAssetFilePath("sphere.obj"),
-			getAssetFilePath("suzanne.obj")
+			getAssetFilePath("suzanne.obj"),
+            getAssetFilePath("mouth.obj"),
+            getAssetFilePath("jack_frost_hat.obj"),
+            getAssetFilePath("hat_cone.obj"),
+            getAssetFilePath("hat_extend.obj"),
+            getAssetFilePath("hat_tip.obj"),
+            getAssetFilePath("shoe.obj"),
+            getAssetFilePath("tube.obj"),
+            getAssetFilePath("shrinking_tube.obj"),
+            getAssetFilePath("growing_tube.obj"),
+            getAssetFilePath("hand.obj"),
+            getAssetFilePath("hand2.obj"),
+            getAssetFilePath("triangle.obj")
+
 	});
 
 
@@ -129,15 +142,15 @@ void A3::reset( resetTypes r ) {
 		for ( double &i : c_loc ) i = 0.0f;
         updateViewMatrix();
 	}
+    if( r == A || r == S ) {
+        resetJoints( *m_rootNode );
+        undoAmt = 0;
+        redoAmt = 0;
+    }
 	if( r == A || r == O ) {
         resetTransform( *m_rootNode );
         xRot = 0.0f;
         yRot = 0.0f;
-	}
-	if( r == A || r == S ) {
-		resetJoints( *m_rootNode );
-		undoAmt = 0;
-		redoAmt = 0;
 	}
     if( r == A ) mode = P;
 
@@ -341,7 +354,7 @@ void A3::updateViewMatrix() {
 //----------------------------------------------------------------------------------------
 void A3::initLightSources() {
 	// World-space position
-	m_light.position = vec3(-2.0f, 5.0f, 0.5f);
+	m_light.position = vec3(-2.0f, 0.0f, 0.5f);
 	m_light.rgbIntensity = vec3(0.8f); // White light
 }
 
@@ -533,7 +546,7 @@ void A3::updateShaderUniforms(
 		vec3 kd = node.material.kd;
 
 		// TODO: Change this color back to red.
-		if( node.isSelected ) glUniform3fv(location, 1, value_ptr( vec3( 1.0f, 1.0f, 0.0f ) ) );
+		if( node.isSelected ) glUniform3fv(location, 1, value_ptr( vec3( 1.0f, 0.0f, 0.0f ) ) );
 		else glUniform3fv(location, 1, value_ptr(kd));
 		CHECK_GL_ERRORS;
 		location = shader.getUniformLocation("material.ks");
@@ -685,11 +698,15 @@ void A3::renderArcCircle() {
 //----------------------------------------------------------------------------------------
 // Rotate all selected joints
 void A3::rotateJoints( SceneNode &node, double rotAmt ) {
-	// TEST rotate
 	for ( SceneNode * n : node.children ) {
 		if ( n->m_nodeType == NodeType::JointNode && n->isSelected ) {
 			JointNode *jointNode = static_cast<JointNode *>(n);
-			jointNode->joint_rotate( 'x', (float)rotAmt );
+			if( mmb ) {
+                jointNode->joint_rotate( 'y', (float)rotAmt );
+			} else if ( rmb ) {
+                jointNode->joint_rotate( 'x', (float)rotAmt );
+			}
+
 		}
 
 		rotateJoints( *n, rotAmt );
@@ -699,7 +716,6 @@ void A3::rotateJoints( SceneNode &node, double rotAmt ) {
 //----------------------------------------------------------------------------------------
 // Reset all joints
 void A3::resetJoints( SceneNode &node ) {
-	// TODO: Change x to whatever axis joint rotates on
 	for ( SceneNode * n : node.children ) {
 		if ( n->m_nodeType == NodeType::JointNode ) {
 			JointNode *jointNode = static_cast<JointNode *>(n);
@@ -722,7 +738,7 @@ void A3::stepJoints( SceneNode &node ) {
             jointNode->step();
             undoAmt = (int)jointNode->undoStack.size();
             redoAmt = (int)jointNode->redoStack.size();
-            cout << "step" << endl;
+            //cout << "step" << endl;
         }
         stepJoints( *n );
     }
@@ -863,11 +879,17 @@ bool A3::mouseMoveEvent (
 		updateViewMatrix();
 	} else if( mode == J && ( lmb || mmb || rmb ) ) {
 	    if (lmb) {
-	        // TODO: implement selection
-	    } else if (mmb) {
+
+	    }
+	    if (mmb) {
 			auto rotAmt = (float) changeY / m_windowHeight * 180;
 
 			rotateJoints( *m_rootNode, rotAmt );
+	    }
+	    if (rmb) {
+            auto rotAmt = (float) changeX / m_windowWidth * 180;
+
+            rotateJoints( *m_rootNode, rotAmt );
 	    }
 	}
 
