@@ -49,7 +49,7 @@ void A4_Render(
 			image(x, y, 0) = (double)y / h;
 			// Green: increasing from Left to Right  
 			image(x, y, 1) = (double)x / w;
-			// Blue: in Lower-Left and Upper-Right corners  
+			// Blue: in Lower-Left and Upper-Right corners
 			image(x, y, 2) = ((y < h/2 && x < w/2)
 						  || (y >= h/2 && x >= w/2)) ? 1.0 : 0.0;
 		}
