@@ -35,3 +35,7 @@
 */.idea/*.iws
 **/.idea/**/workspace.xml
 **/cmake-build-debug/**
+
+# premake4
+*/Makefile
+*/build/*
