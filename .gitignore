@@ -72,3 +72,6 @@ A4_[Ss]olution/A4
 # premake4
 */Makefile
 */build/*
+
+# ignore OS files
+.directory
