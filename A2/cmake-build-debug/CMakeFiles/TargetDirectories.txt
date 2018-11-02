@@ -1,3 +1,0 @@
-/u3/hlpan/cs488/A2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/u3/hlpan/cs488/A2/cmake-build-debug/CMakeFiles/edit_cache.dir
-/u3/hlpan/cs488/A2/cmake-build-debug/CMakeFiles/A2.dir
