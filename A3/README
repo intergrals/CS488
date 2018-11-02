@@ -1,0 +1,74 @@
+CS488 - Fall2018
+Assignment 3
+Hao Pan
+20618961
+
+
+Compilation:
+
+The program can be compiled from the A3 directory (the one this file is in) and running the following commands:
+- premake4 gmake
+- make
+afterwards, the compiled program can be run from the same directory using the command:
+- ./A3 [lua_file_path.lua]
+to run the program using my puppet, use the command:
+- ./A3 Assets/jack_frost.lua
+
+The program was compiled on computer gl34 of MC3007.
+
+
+
+Manual:
+
+Here are details for my implementation:
+- Child nodes have all of the parent transformations applied to them (including scaling)
+- Selected nodes are red.
+- The puppet is, by default, facing the screen
+- The menubar is on top of the window.
+- The undo and redo menu buttons have numbers showing the size of each stack.
+
+Here are some problems with my program:
+- Undo and redo do not work properly when model is rotated, but new transformations applied to the joints still work correctly.
+- This affects reset.
+
+
+Data Structures:
+- No changes were made to data structures.
+
+
+Model:
+
+Background:
+My model is based on the character "Jack Frost", designed by the video game company Atlus. Jack Frost is a recurring character in their "Shin Megami Tensei" series of games, and the character is also the company mascot.
+
+
+Hierarchy:
+My model is roughly designed like so:
+
+/*\*/*\ _ /*\*/*\	<-- hat
+      ('v')		<-- head
+      //*\\		<-- collar and "neck"
+ d=*=*(___)*=*=b	<-- body and arms
+       *v*		<-- hips and tail
+      || ||		<-- thighs
+       * *		<-- knees
+      || ||		<-- legs
+     <_] [_>		<-- shoes
+
+Where the asterisks [*] are joints and everything else is decoration.
+> The model's hat has parts that zig-zag. I made the points of the hat joints so they can be moved. There are 3 joints on each protrusion coming out of the hat, making 6 joints in total in the hat, each with 1 degree of freedom. There is a gold emblem attached to the front of the hat
+
+> The head contains 2 degrees of freedom, being able to be rotated in both the x and y direction. The hat is connected to the head, and so are the model's eyes and mouth - all of which rotate with the head. Since the character does not have a neck, rotating the head will simply be changing its viewing angle. The head cannot be rotated forward because the body will cover the mouth, but it can be rotated backwards and sideways.
+
+> There is a collar between head and body. It is purely for decoration.
+
+> The character has arms coming out of both sides of its body. There are 2 parts of each arm, being connected to a shoulder joint and an elbow joint. The arms can be rotated upwards a respectable amount. A hand is attached to the ends of each arm. The hands are not connected to any joints.
+
+> A decorative tail is placed behind the model.
+
+> The thighs are connected to the body via hip joints. They can be rotated outwards to a respectable amount. The legs are connected to the knees, and can be rotated inwards. Shoes are attached to the legs, but the shoes are not connected to any joints.
+
+
+
+* Easter Egg: When debugging, I accidentally rendered a creepy version of my model, which I took a screenshot of. I can be seen in the image "oops.png".
+

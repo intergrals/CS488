@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/leo/Documents/CS488/A1/maze.cpp
+algorithm
+-
+cstdio
+-
+maze.hpp
+/home/leo/Documents/CS488/A1/maze.hpp
+
+/home/leo/Documents/CS488/A1/maze.hpp
+
