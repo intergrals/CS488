@@ -48,9 +48,7 @@ void A4_Render(
 
   double pixelSize = vWidth / image.width();
 
-  glm::vec3 topLeft = eye - view - vWidth/2 * right - vHeight/2 * up + pixelSize / 2 * right + pixelSize / 2 * up;
-
-  std::cout << vWidth << " - " << vHeight << "--" << pixelSize << std::endl;
+  glm::vec3 topLeft = eye + view - vWidth/2 * right - vHeight/2 * up + pixelSize / 2 * right + pixelSize / 2 * up;
 
   std::cout << "Calling A4_Render(\n" <<
 		  "\t" << *root <<
@@ -79,12 +77,13 @@ void A4_Render(
 			glm::vec3 P( topLeft.x + pixelSize * x, topLeft.y + pixelSize * y, topLeft.z );
 			//std::cout << glm::to_string(P) << std::endl;
 			glm::vec3 C = P - eye;
+			//std::cout << to_string(C) << std::endl;
             if( checkIntersect( *root, eye, C ) ) {
             	image(x, y, 0) = 0;
 				image(x, y, 1) = 0;
 				image(x, y, 2) = 0;
 
-				std::cout << "1" << std::endl;
+				//std::cout << "1" << std::endl;
 				continue;
             }
 			
