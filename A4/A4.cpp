@@ -3,6 +3,21 @@
 #include <glm/ext.hpp>
 
 #include "A4.hpp"
+#include "GeometryNode.hpp"
+
+bool checkIntersect( const SceneNode &node, const glm::vec3 E, const glm::vec3 C ) {
+	for( const SceneNode *n: node.children ) {
+		// Recursive intersection check
+		checkIntersect( *n, E, C );
+		// Check intersection for geometry nodes only
+		if( n->m_nodeType == NodeType::GeometryNode ) {
+			const GeometryNode *gNode =  static_cast<const GeometryNode *>(n);
+			if( gNode->m_primitive->intersection( E, C ) ) return true;
+		}
+	}
+	//std::cout << "no" << std::endl;
+	return false;
+}
 
 void A4_Render(
 		// What to render  
@@ -61,9 +76,19 @@ void A4_Render(
 		for (uint x = 0; x < w; ++x) {
 
 			//std::cout << topLeft.x + pixelSize * x << " - " << topLeft.y + pixelSize * y << std::endl;
+			glm::vec3 P( topLeft.x + pixelSize * x, topLeft.y + pixelSize * y, topLeft.z );
+			//std::cout << glm::to_string(P) << std::endl;
+			glm::vec3 C = P - eye;
+            if( checkIntersect( *root, eye, C ) ) {
+            	image(x, y, 0) = 0;
+				image(x, y, 1) = 0;
+				image(x, y, 2) = 0;
 
+				std::cout << "1" << std::endl;
+				continue;
+            }
 			
-
+            //std::cout << "0" << std::endl;
 
 
 

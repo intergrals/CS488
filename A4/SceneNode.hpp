@@ -53,6 +53,8 @@ public:
 	std::string m_name;
 	unsigned int m_nodeId;
 
+	//bool intersection( glm::vec3 E, glm::vec3 C );
+
 private:
 	// The number of SceneNode instances.
 	static unsigned int nodeInstanceCount;

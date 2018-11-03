@@ -117,7 +117,7 @@ int SceneNode::totalSceneNodes() const {
 std::ostream & operator << (std::ostream & os, const SceneNode & node) {
 
 	//os << "SceneNode:[NodeType: ___, name: ____, id: ____, isSelected: ____, transform: ____"
-	switch (node.m_nodeType) {
+	switch ( node.m_nodeType) {
 		case NodeType::SceneNode:
 			os << "SceneNode";
 			break;
@@ -136,3 +136,14 @@ std::ostream & operator << (std::ostream & os, const SceneNode & node) {
 	os << "]\n";
 	return os;
 }
+
+//---------------------------------------------------------------------------------------
+/*bool SceneNode::intersection(glm::vec3 E, glm::vec3 C) {
+	for( const SceneNode *n: children ) {
+		n->intersection( E, C );
+	}
+	if( m_nodeType == NodeType::GeometryNode ) {
+        const
+	}
+}*/
+

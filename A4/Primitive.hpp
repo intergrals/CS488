@@ -3,10 +3,12 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "polyroots.hpp"
 
 class Primitive {
 public:
   virtual ~Primitive();
+  virtual bool intersection( glm::vec3 E, glm::vec3 C );
 };
 
 class Sphere : public Primitive {
@@ -26,6 +28,7 @@ public:
   {
   }
   virtual ~NonhierSphere();
+  virtual bool intersection( glm::vec3 E, glm::vec3 C );
 
 private:
   glm::vec3 m_pos;
@@ -40,6 +43,8 @@ public:
   }
   
   virtual ~NonhierBox();
+  virtual bool faceIntersection( glm::vec3 p1, glm::vec3 p2, glm::vec3 E, glm::vec3 C );
+  virtual bool intersection( glm::vec3 E, glm::vec3 C );
 
 private:
   glm::vec3 m_pos;
