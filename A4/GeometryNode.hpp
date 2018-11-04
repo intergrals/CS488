@@ -12,6 +12,7 @@ public:
 		Material *mat = nullptr );
 
 	void setMaterial( Material *material );
+	surface intersection( glm::vec3 E, glm::vec3 C );
 
 	Material *m_material;
 	Primitive *m_primitive;

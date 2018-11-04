@@ -27,3 +27,9 @@ void GeometryNode::setMaterial( Material *mat )
 
 	m_material = mat;
 }
+
+surface GeometryNode::intersection(glm::vec3 E, glm::vec3 C) {
+	surface s = m_primitive->intersection( E, C );
+	if( s.intersected ) s.mat = ( PhongMaterial * )m_material;
+	return s;
+}

@@ -5,18 +5,26 @@
 #include "A4.hpp"
 #include "GeometryNode.hpp"
 
-bool checkIntersect( const SceneNode &node, const glm::vec3 E, const glm::vec3 C ) {
-	for( const SceneNode *n: node.children ) {
+surface checkIntersect( const SceneNode &node, const glm::vec3 E, const glm::vec3 C ) {
+	surface ret;
+	for( SceneNode *n: node.children ) {
 		// Recursive intersection check
 		checkIntersect( *n, E, C );
 		// Check intersection for geometry nodes only
 		if( n->m_nodeType == NodeType::GeometryNode ) {
-			const GeometryNode *gNode =  static_cast<const GeometryNode *>(n);
-			if( gNode->m_primitive->intersection( E, C ) ) return true;
+			GeometryNode *gNode =  static_cast<GeometryNode *>(n);
+			surface s = gNode->intersection( E, C );
+			if( !s.intersected ) {
+				continue;
+			} else if( !ret.intersected ) {
+				ret = s;
+			} else if( s.t < ret.t ) {
+				ret = s;
+			}
 		}
 	}
 	//std::cout << "no" << std::endl;
-	return false;
+	return ret;
 }
 
 void A4_Render(
@@ -50,7 +58,7 @@ void A4_Render(
 
   double pixelSize = vWidth / image.width();
 
-  glm::vec3 topLeft = eye + view - vWidth/2 * right - vHeight/2 * up + pixelSize / 2 * right + pixelSize / 2 * up;
+  glm::vec3 topLeft = eye + view - vWidth/2 * right + vHeight/2 * up + pixelSize / 2 * right + pixelSize / 2 * up;
 
   std::cout << "Calling A4_Render(\n" <<
 		  "\t" << *root <<
@@ -76,14 +84,13 @@ void A4_Render(
 		for (uint x = 0; x < w; ++x) {
 
 			//std::cout << topLeft.x + pixelSize * x << " - " << topLeft.y + pixelSize * y << std::endl;
-			glm::vec3 P( topLeft.x + pixelSize * x, topLeft.y + pixelSize * y, topLeft.z );
-			//std::cout << glm::to_string(P) << std::endl;
+			glm::vec3 P( topLeft.x + pixelSize * x, topLeft.y - pixelSize * y, topLeft.z );
 			glm::vec3 C = P - eye;
-			//std::cout << to_string(C) << std::endl;
-            if( checkIntersect( *root, eye, C ) ) {
-            	image(x, y, 0) = 0;
-				image(x, y, 1) = 0;
-				image(x, y, 2) = 0;
+			surface s = checkIntersect( *root, eye, C );
+            if( s.intersected ) {
+            	image(x, y, 0) = s.mat->get_kd().x;
+				image(x, y, 1) = s.mat->get_kd().y;
+				image(x, y, 2) = s.mat->get_kd().z;
 
 				//std::cout << "1" << std::endl;
 				continue;
@@ -93,13 +100,17 @@ void A4_Render(
 
 
 
-			// Red: increasing from Top to Bottom  
+			/*// Red: increasing from Top to Bottom
 			image(x, y, 0) = (double)y / h;
 			// Green: increasing from Left to Right  
 			image(x, y, 1) = (double)x / w;
 			// Blue: in Lower-Left and Upper-Right corners
 			image(x, y, 2) = ((y < h/2 && x < w/2)
-						  || (y >= h/2 && x >= w/2)) ? 1.0 : 0.0;
+						  || (y >= h/2 && x >= w/2)) ? 1.0 : 0.0;*/
+
+            image(x, y, 0) = 0;
+            image(x, y, 1) = 0;
+            image(x, y, 2) = 51/255.0;
 		}
 	}
 

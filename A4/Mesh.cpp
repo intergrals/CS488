@@ -30,8 +30,9 @@ Mesh::Mesh( const std::string& fname )
 	}
 }
 
-bool Mesh::tri_intersection( glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, glm::vec3 &E, glm::vec3 &C ) {
+surface Mesh::tri_intersection( glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, glm::vec3 &E, glm::vec3 &C ) {
 	//std::cout << to_string(C) << std::endl;
+	surface s;
 
 	glm::mat3 mA = {a.x - b.x, a.x - c.x, C.x,
 				 	a.y - b.y, a.y - c.y, C.y,
@@ -44,7 +45,7 @@ bool Mesh::tri_intersection( glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, glm::vec3
 					 	a.z - b.z, a.z - E.z, C.z };
 	mGamma = glm::transpose(mGamma);
 	double Gamma = glm::determinant( mGamma ) / A;
-	if( Gamma < 0 || Gamma > 1 ) return false;
+	if( Gamma < 0 || Gamma > 1 ) return s;
     //std::cout << Gamma << std::endl;
 
 	glm::mat3 mBeta = { a.x - E.x, a.x - c.x, C.x,
@@ -52,16 +53,18 @@ bool Mesh::tri_intersection( glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, glm::vec3
 						a.z - E.z, a.z - c.z, C.z };
 	mBeta = glm::transpose(mBeta);
 	double Beta = glm::determinant( mBeta ) / A;
-	if( Beta < 0 || Beta > 1 - Gamma ) return false;
+	if( Beta < 0 || Beta > 1 - Gamma ) return s;
     //std::cout << Beta << std::endl;
 
 	glm::mat3 mt = {a.x - b.x, a.x - c.x, a.x - E.x,
 				  	a.y - b.y, a.y - c.y, a.y - E.y,
 				  	a.z - b.z, a.z - c.z, a.z - E.z };
     mt = glm::transpose(mt);
-	double t = glm::determinant( mt ) / A;
+	s.t = glm::determinant( mt ) / A;
 
-	std::cout << t << std::endl;
+	if( s.t < 0 ) return s;
+
+	s.intersected = true;
 
 	/*glm::vec3 v01 = v1 - v0;
 	glm::vec3 v02 = v2 - v0;
@@ -94,18 +97,25 @@ bool Mesh::tri_intersection( glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, glm::vec3
     std::cout << "made it" << std::endl;
 */
 
-    return true;
+    return s;
 
 }
 
-bool Mesh::intersection(glm::vec3 E, glm::vec3 C) {
-	//std::cout << "Face size:" << m_faces.size() << std::endl;
-
+surface Mesh::intersection(glm::vec3 E, glm::vec3 C) {
+	surface ret;
 	for( const auto f: m_faces ) {
-        if ( tri_intersection( m_vertices[f.v1], m_vertices[f.v2], m_vertices[f.v3], E, C ) ) return true;
-        //std::cout << "a" << std::endl;
+		surface s = tri_intersection( m_vertices[f.v1], m_vertices[f.v2], m_vertices[f.v3], E, C );
+		if ( !s.intersected ) {
+			continue;
+		}
+		else if( !ret.intersected ) {
+			ret = s;
+		}
+		else if( s.t < ret.t ) {
+			ret = s;
+		}
 	}
-	return false;
+	return ret;
 }
 
 std::ostream& operator<<(std::ostream& out, const Mesh& mesh)

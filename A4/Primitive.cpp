@@ -1,13 +1,14 @@
 // Fall 2018
 
 #include "Primitive.hpp"
+#include "polyroots.hpp"
 #include <iostream>
 
 Primitive::~Primitive()
 {
 }
 
-bool Primitive::intersection(glm::vec3 E, glm::vec3 C) {}
+surface Primitive::intersection(glm::vec3 E, glm::vec3 C) {}
 
 Sphere::~Sphere()
 {
@@ -21,7 +22,7 @@ NonhierSphere::~NonhierSphere()
 {
 }
 
-bool NonhierSphere::intersection( glm::vec3 E, glm::vec3 C ) {
+surface NonhierSphere::intersection( glm::vec3 E, glm::vec3 C ) {
     double roots[2];
 
     size_t retval =  quadraticRoots(glm::dot(C, C),
@@ -29,14 +30,29 @@ bool NonhierSphere::intersection( glm::vec3 E, glm::vec3 C ) {
                                     glm::dot( ( E - m_pos ), ( E - m_pos ) ) - m_radius * m_radius,
                                     roots );
     //std::cout << retval << std::endl;
-    return retval != 0;
+    surface s;
+    if ( retval == 0 ) {
+        return s;
+    } else if ( retval == 1 ) {
+        s.intersected = true;
+        s.t = roots[0];
+    } else if ( retval == 2 ) {
+        s.intersected = true;
+        s.t = glm::min( roots[0], roots[1] );
+    }
+
+    // calc normal
+    glm::vec3 hitPoint = E + (float)s.t * C;
+    s.n = glm::normalize( hitPoint - m_pos );
+
+    return s;
 }
 
 NonhierBox::~NonhierBox()
 {
 }
 
-bool NonhierBox::faceIntersection( glm::vec3 minPts, glm::vec3 maxPts, glm::vec3 E, glm::vec3 C ) {
+surface NonhierBox::faceIntersection( glm::vec3 minPts, glm::vec3 maxPts, glm::vec3 E, glm::vec3 C ) {
     double tmin = -INFINITY;
     double tmax = INFINITY;
 
@@ -54,38 +70,67 @@ bool NonhierBox::faceIntersection( glm::vec3 minPts, glm::vec3 maxPts, glm::vec3
     tmax = glm::min( tmax, glm::max( minY, maxY ) );
     tmax = glm::min( tmax, glm::max( minZ, maxZ ) );
 
-    return tmax >= tmin;
+
+    surface s;
+    if ( tmax >= tmin ) {
+        s.intersected = true;
+        s.t = tmin;
+    }
+    return s;
+
 }
 
-bool NonhierBox::intersection(glm::vec3 E, glm::vec3 C) {
+surface NonhierBox::intersection(glm::vec3 E, glm::vec3 C) {
+    glm::vec3 min[6];
+    glm::vec3 max[6];
+
     // front
-    glm::vec3 min1( m_pos.x - m_size/2, m_pos.y - m_size/2, m_pos.z + m_size/2 );
-    glm::vec3 max1( m_pos.x + m_size/2, m_pos.y + m_size/2, m_pos.z + m_size/2 );
+    min[0] = { m_pos.x - m_size/2, m_pos.y - m_size/2, m_pos.z + m_size/2 };
+    max[0] = { m_pos.x + m_size/2, m_pos.y + m_size/2, m_pos.z + m_size/2 };
 
     // left
-    glm::vec3 min2( m_pos.x - m_size/2, m_pos.y - m_size/2, m_pos.z - m_size/2 );
-    glm::vec3 max2( m_pos.x - m_size/2, m_pos.y + m_size/2, m_pos.z + m_size/2 );
+    min[1] = { m_pos.x - m_size/2, m_pos.y - m_size/2, m_pos.z - m_size/2 };
+    max[1] = { m_pos.x - m_size/2, m_pos.y + m_size/2, m_pos.z + m_size/2 };
 
     // right
-    glm::vec3 min3( m_pos.x + m_size/2, m_pos.y - m_size/2, m_pos.z - m_size/2 );
-    glm::vec3 max3( m_pos.x + m_size/2, m_pos.y + m_size/2, m_pos.z + m_size/2 );
+    min[2] = { m_pos.x + m_size/2, m_pos.y - m_size/2, m_pos.z - m_size/2 };
+    max[2] = { m_pos.x + m_size/2, m_pos.y + m_size/2, m_pos.z + m_size/2 };
 
     // top
-    glm::vec3 min4( m_pos.x - m_size/2, m_pos.y + m_size/2, m_pos.z - m_size/2 );
-    glm::vec3 max4( m_pos.x + m_size/2, m_pos.y + m_size/2, m_pos.z + m_size/2 );
+    min[3] = { m_pos.x - m_size/2, m_pos.y + m_size/2, m_pos.z - m_size/2 };
+    max[3] = { m_pos.x + m_size/2, m_pos.y + m_size/2, m_pos.z + m_size/2 };
 
     // bottom
-    glm::vec3 min5( m_pos.x - m_size/2, m_pos.y - m_size/2, m_pos.z - m_size/2 );
-    glm::vec3 max5( m_pos.x + m_size/2, m_pos.y - m_size/2, m_pos.z + m_size/2 );
+    min[4] = { m_pos.x - m_size/2, m_pos.y - m_size/2, m_pos.z - m_size/2 };
+    max[4] = { m_pos.x + m_size/2, m_pos.y - m_size/2, m_pos.z + m_size/2 };
 
     // back
-    glm::vec3 min6( m_pos.x - m_size/2, m_pos.y - m_size/2, m_pos.z - m_size/2 );
-    glm::vec3 max6( m_pos.x + m_size/2, m_pos.y + m_size/2, m_pos.z - m_size/2 );
+    min[5] = { m_pos.x - m_size/2, m_pos.y - m_size/2, m_pos.z - m_size/2 };
+    max[5] = { m_pos.x + m_size/2, m_pos.y + m_size/2, m_pos.z - m_size/2 };
 
-    return  faceIntersection( min1, max1, E, C ) ||
-            faceIntersection( min2, max2, E, C ) ||
-            faceIntersection( min3, max3, E, C ) ||
-            faceIntersection( min4, max4, E, C ) ||
-            faceIntersection( min5, max5, E, C ) ||
-            faceIntersection( min6, max6, E, C );
+    surface ret;
+    surface s[6];
+    int num = -1;
+    for( int i = 0; i < 6; i++ ) {
+        s[i] = faceIntersection( min[i], max[i], E, C );
+        if ( !s[i].intersected ) {
+            continue;
+        }
+        else if( !ret.intersected ) {
+            ret = s[i];
+            num = i;
+        }
+        else if( s[i].t < ret.t ) {
+            ret = s[i];
+            num = i;
+        }
+    }
+    if ( num == 0 ) ret.n = {0, 0, 1};
+    else if ( num == 1 ) ret.n = {-1, 0, 0};
+    else if ( num == 2 ) ret.n = {1, 0, 0};
+    else if ( num == 3 ) ret.n = {0, 1, 0};
+    else if ( num == 4 ) ret.n = {0, -1, 0};
+    else if ( num == 5 ) ret.n = {0, 0, -1};
+
+    return ret;
 }
