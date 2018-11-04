@@ -42,9 +42,11 @@ void A4_Render(
   const glm::vec3 &right = glm::cross( view, up ) / glm::length( glm::cross( view, up ) );
 
   // get virtual screen parameters
-  double screenDist = -length(view);
-  double vHeight = 2 * tan(fovy/2) * screenDist;
+  double screenDist = 1;
+  double vHeight = 2 * tan(glm::radians(fovy)/2) * screenDist;
   double vWidth = vHeight * aspect;
+  
+  std::cout << vHeight << std::endl;
 
   double pixelSize = vWidth / image.width();
 

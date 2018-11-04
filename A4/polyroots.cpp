@@ -316,7 +316,7 @@ static double PolishRoot(
 	size_t degree, double A, double B, double C, double D, double root )
 {
 	size_t i, j;
-	double x, y, dydx, dx, lastx = HUGE, lasty = HUGE;
+	double x, y, dydx, dx, lastx = HUGE_VAL, lasty = HUGE_VAL;
 	double cs[4] = { A, B, C, D };
 
 	x = root;

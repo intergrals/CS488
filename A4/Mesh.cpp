@@ -31,7 +31,7 @@ Mesh::Mesh( const std::string& fname )
 }
 
 bool Mesh::tri_intersection( glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, glm::vec3 &E, glm::vec3 &C ) {
-	std::cout << to_string(C) << std::endl;
+	//std::cout << to_string(C) << std::endl;
 
 	glm::mat3 mA = {a.x - b.x, a.x - c.x, C.x,
 				 	a.y - b.y, a.y - c.y, C.y,
