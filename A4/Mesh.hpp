@@ -28,8 +28,8 @@ struct Triangle
 class Mesh : public Primitive {
 public:
   Mesh( const std::string& fname );
-  virtual surface intersection( glm::vec3 E, glm::vec3 C );
-  surface tri_intersection( glm::vec3 &v1, glm::vec3 &v2, glm::vec3 &v3, glm::vec3 &E, glm::vec3 &C );
+  virtual surface intersection( ray r );
+  surface tri_intersection( glm::vec3 &v1, glm::vec3 &v2, glm::vec3 &v3, ray r );
 
 private:
 	std::vector<glm::vec3> m_vertices;

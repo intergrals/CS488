@@ -8,7 +8,7 @@ Primitive::~Primitive()
 {
 }
 
-surface Primitive::intersection(glm::vec3 E, glm::vec3 C) {}
+surface Primitive::intersection( ray r ) {}
 
 Sphere::~Sphere()
 {
@@ -22,12 +22,12 @@ NonhierSphere::~NonhierSphere()
 {
 }
 
-surface NonhierSphere::intersection( glm::vec3 E, glm::vec3 C ) {
+surface NonhierSphere::intersection( ray r ) {
     double roots[2];
 
-    size_t retval =  quadraticRoots(glm::dot(C, C),
-                                    glm::dot( 2.0f * C, (E - m_pos) ),
-                                    glm::dot( ( E - m_pos ), ( E - m_pos ) ) - m_radius * m_radius,
+    size_t retval =  quadraticRoots(glm::dot(r.C, r.C),
+                                    glm::dot( 2.0f * r.C, (r.E - m_pos) ),
+                                    glm::dot( ( r.E - m_pos ), ( r.E - m_pos ) ) - m_radius * m_radius,
                                     roots );
     //std::cout << retval << std::endl;
     surface s;
@@ -41,9 +41,9 @@ surface NonhierSphere::intersection( glm::vec3 E, glm::vec3 C ) {
         s.t = glm::min( roots[0], roots[1] );
     }
 
-    // calc normal
-    glm::vec3 hitPoint = E + (float)s.t * C;
-    s.n = glm::normalize( hitPoint - m_pos );
+    // calc normal and intersection point
+    s.intersect_pt = r.E + (float)s.t * r.C;
+    s.n = glm::normalize( s.intersect_pt - m_pos );
 
     return s;
 }
@@ -52,16 +52,16 @@ NonhierBox::~NonhierBox()
 {
 }
 
-surface NonhierBox::faceIntersection( glm::vec3 minPts, glm::vec3 maxPts, glm::vec3 E, glm::vec3 C ) {
+surface NonhierBox::faceIntersection( glm::vec3 minPts, glm::vec3 maxPts, ray r ) {
     double tmin = -INFINITY;
     double tmax = INFINITY;
 
-    double minX = ( minPts.x - E.x ) / C.x;
-    double maxX = ( maxPts.x - E.x ) / C.x;
-    double minY = ( minPts.y - E.y ) / C.y;
-    double maxY = ( maxPts.y - E.y ) / C.y;
-    double minZ = ( minPts.z - E.z ) / C.z;
-    double maxZ = ( maxPts.z - E.z ) / C.z;
+    double minX = ( minPts.x - r.E.x ) / r.C.x;
+    double maxX = ( maxPts.x - r.E.x ) / r.C.x;
+    double minY = ( minPts.y - r.E.y ) / r.C.y;
+    double maxY = ( maxPts.y - r.E.y ) / r.C.y;
+    double minZ = ( minPts.z - r.E.z ) / r.C.z;
+    double maxZ = ( maxPts.z - r.E.z ) / r.C.z;
 
     tmin = glm::max( tmin, glm::min( minX, maxX ) );
     tmin = glm::max( tmin, glm::min( minY, maxY ) );
@@ -75,12 +75,13 @@ surface NonhierBox::faceIntersection( glm::vec3 minPts, glm::vec3 maxPts, glm::v
     if ( tmax >= tmin ) {
         s.intersected = true;
         s.t = tmin;
+        s.intersect_pt = r.E + (float)s.t * r.C;
     }
     return s;
 
 }
 
-surface NonhierBox::intersection(glm::vec3 E, glm::vec3 C) {
+surface NonhierBox::intersection( ray r ) {
     glm::vec3 min[6];
     glm::vec3 max[6];
 
@@ -112,7 +113,7 @@ surface NonhierBox::intersection(glm::vec3 E, glm::vec3 C) {
     surface s[6];
     int num = -1;
     for( int i = 0; i < 6; i++ ) {
-        s[i] = faceIntersection( min[i], max[i], E, C );
+        s[i] = faceIntersection( min[i], max[i], r );
         if ( !s[i].intersected ) {
             continue;
         }

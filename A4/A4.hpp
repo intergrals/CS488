@@ -27,13 +27,23 @@ void A4_Render(
 		const std::list<Light *> & lights
 );
 
+static const double Epsilon = 0.00001;
+
 
 class surface {
 public:
     //Primitive &shape;
     bool intersected = false;
     double t;
-    //glm::vec3 intersection;
+    glm::vec3 intersect_pt;
     glm::vec3 n;
     PhongMaterial *mat = nullptr;
+};
+
+class ray {
+public:
+    glm::vec3 E;    // Eye / starting point
+    glm::vec3 C;    // Ray direction
+    glm::vec3 tmin; // minimum t
+    glm::vec3 tmax; // maximum t
 };

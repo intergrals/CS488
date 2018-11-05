@@ -12,6 +12,8 @@ public:
   virtual ~PhongMaterial();
 
   glm::vec3 get_kd();
+  glm::vec3 get_ks();
+  double get_shininess();
 
 private:
   glm::vec3 m_kd;

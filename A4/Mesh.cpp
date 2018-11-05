@@ -30,41 +30,47 @@ Mesh::Mesh( const std::string& fname )
 	}
 }
 
-surface Mesh::tri_intersection( glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, glm::vec3 &E, glm::vec3 &C ) {
+surface Mesh::tri_intersection( glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, ray r ) {
 	//std::cout << to_string(C) << std::endl;
 	surface s;
 
-	glm::mat3 mA = {a.x - b.x, a.x - c.x, C.x,
-				 	a.y - b.y, a.y - c.y, C.y,
-				 	a.z - b.z, a.z - c.z, C.z };
+	glm::mat3 mA = {a.x - b.x, a.x - c.x, r.C.x,
+				 	a.y - b.y, a.y - c.y, r.C.y,
+				 	a.z - b.z, a.z - c.z, r.C.z };
 	mA = glm::transpose(mA);
 	double A = glm::determinant( mA );
 
-	glm::mat3 mGamma = {a.x - b.x, a.x - E.x, C.x,
-					 	a.y - b.y, a.y - E.y, C.y,
-					 	a.z - b.z, a.z - E.z, C.z };
+	glm::mat3 mGamma = {a.x - b.x, a.x - r.E.x, r.C.x,
+					 	a.y - b.y, a.y - r.E.y, r.C.y,
+					 	a.z - b.z, a.z - r.E.z, r.C.z };
 	mGamma = glm::transpose(mGamma);
 	double Gamma = glm::determinant( mGamma ) / A;
 	if( Gamma < 0 || Gamma > 1 ) return s;
     //std::cout << Gamma << std::endl;
 
-	glm::mat3 mBeta = { a.x - E.x, a.x - c.x, C.x,
-						a.y - E.y, a.y - c.y, C.y,
-						a.z - E.z, a.z - c.z, C.z };
+	glm::mat3 mBeta = { a.x - r.E.x, a.x - c.x, r.C.x,
+						a.y - r.E.y, a.y - c.y, r.C.y,
+						a.z - r.E.z, a.z - c.z, r.C.z };
 	mBeta = glm::transpose(mBeta);
 	double Beta = glm::determinant( mBeta ) / A;
 	if( Beta < 0 || Beta > 1 - Gamma ) return s;
     //std::cout << Beta << std::endl;
 
-	glm::mat3 mt = {a.x - b.x, a.x - c.x, a.x - E.x,
-				  	a.y - b.y, a.y - c.y, a.y - E.y,
-				  	a.z - b.z, a.z - c.z, a.z - E.z };
+	glm::mat3 mt = {a.x - b.x, a.x - c.x, a.x - r.E.x,
+				  	a.y - b.y, a.y - c.y, a.y - r.E.y,
+				  	a.z - b.z, a.z - c.z, a.z - r.E.z };
     mt = glm::transpose(mt);
 	s.t = glm::determinant( mt ) / A;
 
 	if( s.t < 0 ) return s;
 
+    s.intersect_pt = r.E + (float)s.t * r.C;
 	s.intersected = true;
+
+	// calc normal
+	glm::vec3 ab = b - a;
+	glm::vec3 ac = c - a;
+	s.n = glm::cross( ab, ac );
 
 	/*glm::vec3 v01 = v1 - v0;
 	glm::vec3 v02 = v2 - v0;
@@ -101,10 +107,10 @@ surface Mesh::tri_intersection( glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, glm::v
 
 }
 
-surface Mesh::intersection(glm::vec3 E, glm::vec3 C) {
+surface Mesh::intersection( ray r ) {
 	surface ret;
 	for( const auto f: m_faces ) {
-		surface s = tri_intersection( m_vertices[f.v1], m_vertices[f.v2], m_vertices[f.v3], E, C );
+		surface s = tri_intersection( m_vertices[f.v1], m_vertices[f.v2], m_vertices[f.v3], r );
 		if ( !s.intersected ) {
 			continue;
 		}

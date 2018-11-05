@@ -5,15 +5,15 @@
 #include "A4.hpp"
 #include "GeometryNode.hpp"
 
-surface checkIntersect( const SceneNode &node, const glm::vec3 E, const glm::vec3 C ) {
+surface checkIntersect( const SceneNode &node, const ray r ) {
 	surface ret;
 	for( SceneNode *n: node.children ) {
 		// Recursive intersection check
-		checkIntersect( *n, E, C );
+		checkIntersect( *n, r );
 		// Check intersection for geometry nodes only
 		if( n->m_nodeType == NodeType::GeometryNode ) {
 			GeometryNode *gNode =  static_cast<GeometryNode *>(n);
-			surface s = gNode->intersection( E, C );
+			surface s = gNode->intersection( r );
 			if( !s.intersected ) {
 				continue;
 			} else if( !ret.intersected ) {
@@ -82,15 +82,38 @@ void A4_Render(
 
 	for (uint y = 0; y < h; ++y) {
 		for (uint x = 0; x < w; ++x) {
-
+		    ray R;
 			//std::cout << topLeft.x + pixelSize * x << " - " << topLeft.y + pixelSize * y << std::endl;
 			glm::vec3 P( topLeft.x + pixelSize * x, topLeft.y - pixelSize * y, topLeft.z );
-			glm::vec3 C = P - eye;
-			surface s = checkIntersect( *root, eye, C );
+			R.C = P - eye;
+			R.E = eye;
+			// Check if ray intersects object
+			surface s = checkIntersect( *root, R );
+			// if it intersects, calculate the colour through lighting
             if( s.intersected ) {
-            	image(x, y, 0) = s.mat->get_kd().x;
-				image(x, y, 1) = s.mat->get_kd().y;
-				image(x, y, 2) = s.mat->get_kd().z;
+            	image(x, y, 0) = s.mat->get_kd().x * ambient.x;
+				image(x, y, 1) = s.mat->get_kd().y * ambient.y;
+				image(x, y, 2) = s.mat->get_kd().z * ambient.z;
+
+                glm::vec3 v = glm::normalize( -R.C );
+				for( auto *l : lights ) {
+
+
+				    glm::vec3 p2l = l->position - s.intersect_pt;
+				    glm::vec3 lp = glm::normalize( p2l );
+				    double light_dist = glm::length( p2l );
+				    glm::vec3 r = -lp + 2 * glm::dot( lp, s.n ) * s.n;
+				    glm::vec3 Lout =  s.mat->get_kd() * glm::dot( lp, s.n ) * l->colour
+				                    + s.mat->get_ks() * pow( glm::dot( r, v ), s.mat->get_shininess() ) * l->colour;
+
+				    Lout /= ( l->falloff[0] + l->falloff[1] * light_dist + l->falloff[2] * light_dist * light_dist );
+
+				    //std::cout << glm::to_string( Lout ) << std::endl;
+
+				    image( x, y, 0 ) += Lout.x;
+                    image( x, y, 1 ) += Lout.y;
+                    image( x, y, 2 ) += Lout.z;
+				}
 
 				//std::cout << "1" << std::endl;
 				continue;

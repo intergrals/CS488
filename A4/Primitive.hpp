@@ -8,7 +8,7 @@
 class Primitive {
 public:
   virtual ~Primitive();
-  virtual surface intersection( glm::vec3 E, glm::vec3 C );
+  virtual surface intersection( ray r );
 };
 
 class Sphere : public Primitive {
@@ -28,7 +28,7 @@ public:
   {
   }
   virtual ~NonhierSphere();
-  virtual surface intersection( glm::vec3 E, glm::vec3 C );
+  virtual surface intersection( ray r );
 
 private:
   glm::vec3 m_pos;
@@ -43,8 +43,8 @@ public:
   }
   
   virtual ~NonhierBox();
-  virtual surface faceIntersection( glm::vec3 p1, glm::vec3 p2, glm::vec3 E, glm::vec3 C );
-  virtual surface intersection( glm::vec3 E, glm::vec3 C );
+  virtual surface faceIntersection( glm::vec3 p1, glm::vec3 p2, ray r );
+  virtual surface intersection( ray r );
 
 private:
   glm::vec3 m_pos;
