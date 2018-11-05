@@ -28,12 +28,14 @@ struct Triangle
 class Mesh : public Primitive {
 public:
   Mesh( const std::string& fname );
+  ~Mesh();
   virtual surface intersection( ray r );
   surface tri_intersection( glm::vec3 &v1, glm::vec3 &v2, glm::vec3 &v3, ray r );
 
 private:
 	std::vector<glm::vec3> m_vertices;
 	std::vector<Triangle> m_faces;
+	NonhierBox *boundingBox;
 
     friend std::ostream& operator<<(std::ostream& out, const Mesh& mesh);
 };

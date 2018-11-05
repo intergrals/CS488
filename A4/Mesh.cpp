@@ -12,7 +12,10 @@ Mesh::Mesh( const std::string& fname )
 	: m_vertices()
 	, m_faces()
 {
-    //std::cout <<  << std::endl;
+
+    double min[3] = {  INFINITY,  INFINITY,  INFINITY };
+    double max[3] = { -INFINITY, -INFINITY, -INFINITY };
+
 	std::string code;
 	double vx, vy, vz;
 	size_t s1, s2, s3;
@@ -23,11 +26,33 @@ Mesh::Mesh( const std::string& fname )
 		if( code == "v" ) {
 			ifs >> vx >> vy >> vz;
 			m_vertices.push_back( glm::vec3( vx, vy, vz ) );
+
+			min[0] = glm::min( min[0], vx );
+			min[1] = glm::min( min[1], vy );
+			min[2] = glm::min( min[2], vz );
+            max[0] = glm::max( max[0], vx );
+            max[1] = glm::max( max[1], vy );
+            max[2] = glm::max( max[2], vz );
 		} else if( code == "f" ) {
 			ifs >> s1 >> s2 >> s3;
 			m_faces.push_back( Triangle( s1 - 1, s2 - 1, s3 - 1 ) );
 		}
 	}
+
+	// make bounding box
+	glm::vec3 b_pos;
+	double size = -INFINITY;
+	for ( int i = 0; i < 3; i++ ) {
+	    size = glm::max( size, max[i] - min[i] );
+	    b_pos[i] = ( max[i] + min[i] ) / 2;
+	}
+
+	boundingBox = new NonhierBox( b_pos, size );
+}
+
+// destructor
+Mesh::~Mesh() {
+	delete boundingBox;
 }
 
 surface Mesh::tri_intersection( glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, ray r ) {
@@ -109,6 +134,9 @@ surface Mesh::tri_intersection( glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, ray r 
 
 surface Mesh::intersection( ray r ) {
 	surface ret;
+
+	if( !boundingBox->intersection( r ).intersected ) return ret;
+
 	for( const auto f: m_faces ) {
 		surface s = tri_intersection( m_vertices[f.v1], m_vertices[f.v2], m_vertices[f.v3], r );
 		if ( !s.intersected ) {
