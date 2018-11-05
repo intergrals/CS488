@@ -98,12 +98,19 @@ void A4_Render(
                 glm::vec3 v = glm::normalize( -R.C );
 				for( auto *l : lights ) {
 
-
 				    glm::vec3 p2l = l->position - s.intersect_pt;
-				    glm::vec3 lp = glm::normalize( p2l );
+				    glm::vec3 l_dir = glm::normalize( p2l );
 				    double light_dist = glm::length( p2l );
-				    glm::vec3 r = -lp + 2 * glm::dot( lp, s.n ) * s.n;
-				    glm::vec3 Lout =  s.mat->get_kd() * glm::dot( lp, s.n ) * l->colour
+
+				    // Check light ray intersection.
+				    ray lR;
+				    lR.E = s.intersect_pt;
+				    //std::cout << glm::to_string( s.intersect_pt ) << std::endl;
+				    lR.C = l_dir;
+				    if( checkIntersect( *root, lR ).intersected ) continue;
+
+				    glm::vec3 r = -l_dir + 2 * glm::dot( l_dir, s.n ) * s.n;
+				    glm::vec3 Lout =  s.mat->get_kd() * glm::dot( l_dir, s.n ) * l->colour
 				                    + s.mat->get_ks() * pow( glm::dot( r, v ), s.mat->get_shininess() ) * l->colour;
 
 				    Lout /= ( l->falloff[0] + l->falloff[1] * light_dist + l->falloff[2] * light_dist * light_dist );

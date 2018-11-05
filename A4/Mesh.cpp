@@ -62,7 +62,7 @@ surface Mesh::tri_intersection( glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, ray r 
     mt = glm::transpose(mt);
 	s.t = glm::determinant( mt ) / A;
 
-	if( s.t < 0 ) return s;
+	if( s.t - r.tmin < Epsilon ) return s;
 
     s.intersect_pt = r.E + (float)s.t * r.C;
 	s.intersected = true;

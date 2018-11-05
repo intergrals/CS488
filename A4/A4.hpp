@@ -27,7 +27,7 @@ void A4_Render(
 		const std::list<Light *> & lights
 );
 
-static const double Epsilon = 0.00001;
+static const double Epsilon = 0.01;
 
 
 class surface {
@@ -42,8 +42,8 @@ public:
 
 class ray {
 public:
-    glm::vec3 E;    // Eye / starting point
-    glm::vec3 C;    // Ray direction
-    glm::vec3 tmin; // minimum t
-    glm::vec3 tmax; // maximum t
+    glm::vec3 E;            // Eye / starting point
+    glm::vec3 C;            // Ray direction
+    double tmin = 0;        // minimum t
+    double tmax = INFINITY; // maximum t
 };

@@ -30,15 +30,16 @@ surface NonhierSphere::intersection( ray r ) {
                                     glm::dot( ( r.E - m_pos ), ( r.E - m_pos ) ) - m_radius * m_radius,
                                     roots );
     //std::cout << retval << std::endl;
+
     surface s;
     if ( retval == 0 ) {
         return s;
     } else if ( retval == 1 ) {
-        s.intersected = true;
         s.t = roots[0];
+        if ( s.t - r.tmin > Epsilon ) s.intersected = true;
     } else if ( retval == 2 ) {
-        s.intersected = true;
         s.t = glm::min( roots[0], roots[1] );
+        if ( s.t - r.tmin > Epsilon ) s.intersected = true;
     }
 
     // calc normal and intersection point
@@ -72,7 +73,7 @@ surface NonhierBox::faceIntersection( glm::vec3 minPts, glm::vec3 maxPts, ray r 
 
 
     surface s;
-    if ( tmax >= tmin ) {
+    if ( tmax >= tmin && tmin - r.tmin > Epsilon ) {
         s.intersected = true;
         s.t = tmin;
         s.intersect_pt = r.E + (float)s.t * r.C;
