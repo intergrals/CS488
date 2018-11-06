@@ -30,7 +30,10 @@ surface checkIntersect( const SceneNode &node, const ray r ) {
 
 //
 void setTransMat( const SceneNode &node ) {
-
+    for( SceneNode *n: node.children ) {
+        n->hiertrans = n->trans * node.hiertrans;
+        setTransMat( *n );
+    }
 }
 
 void A4_Render(
@@ -98,6 +101,10 @@ void A4_Render(
         h++;
         w++;
 	}
+
+	// Set hierarchical transformation matrices for all nodes
+	root->hiertrans = root->trans;
+	setTransMat( *root );
 
 	for (uint y = 0; y < h; ++y) {
 		for (uint x = 0; x < w; ++x) {

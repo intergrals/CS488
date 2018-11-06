@@ -28,7 +28,7 @@ void A4_Render(
 );
 
 static const double Epsilon = 0.01;
-static const bool super = false;
+static const bool super = true;
 
 
 class surface {
