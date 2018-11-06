@@ -58,10 +58,16 @@ void A4_Render(
 
   double pixelSize = vWidth / image.width();
 
-  glm::vec3 topLeft = eye + view - vWidth/2 * right + vHeight/2 * up + pixelSize / 2 * right + pixelSize / 2 * up;
+  //glm::vec3 topLeft = eye + view - vWidth/2 * right + vHeight/2 * up + pixelSize / 2 * right + pixelSize / 2 * up;
+  glm::vec3 topLeft = eye + view - vWidth/2 * right + vHeight/2 * up;
+
+  if( !super ) {
+      topLeft += pixelSize / 2 * right + pixelSize / 2 * up;
+  }
 
   std::cout << "Calling A4_Render(\n" <<
 		  "\t" << *root <<
+		  "\t" << "Supersampling: " << ( super? "ON" : "OFF" ) << std::endl <<
           "\t" << "Image(width:" << image.width() << ", height:" << image.height() << ")\n"
           "\t" << "eye:  " << glm::to_string(eye) << std::endl <<
 		  "\t" << "view: " << glm::to_string(view) << std::endl <<
@@ -80,6 +86,12 @@ void A4_Render(
 	size_t h = image.height();
 	size_t w = image.width();
 
+    glm::vec3 superPoints[w+1][h+1];
+	if ( super ) {
+        h++;
+        w++;
+	}
+
 	for (uint y = 0; y < h; ++y) {
 		for (uint x = 0; x < w; ++x) {
 		    ray R;
@@ -91,9 +103,15 @@ void A4_Render(
 			surface s = checkIntersect( *root, R );
 			// if it intersects, calculate the colour through lighting
             if( s.intersected ) {
-            	image(x, y, 0) = s.mat->get_kd().x * ambient.x;
-				image(x, y, 1) = s.mat->get_kd().y * ambient.y;
-				image(x, y, 2) = s.mat->get_kd().z * ambient.z;
+                if( super ) {
+                    superPoints[x][y][0] = s.mat->get_kd().x * ambient.x;
+                    superPoints[x][y][1] = s.mat->get_kd().y * ambient.y;
+                    superPoints[x][y][2] = s.mat->get_kd().z * ambient.z;
+                } else {
+                    image(x, y, 0) = s.mat->get_kd().x * ambient.x;
+                    image(x, y, 1) = s.mat->get_kd().y * ambient.y;
+                    image(x, y, 2) = s.mat->get_kd().z * ambient.z;
+                }
 
                 glm::vec3 v = glm::normalize( -R.C );
 				for( auto *l : lights ) {
@@ -117,31 +135,56 @@ void A4_Render(
 
 				    //std::cout << glm::to_string( Lout ) << std::endl;
 
-				    image( x, y, 0 ) += Lout.x;
-                    image( x, y, 1 ) += Lout.y;
-                    image( x, y, 2 ) += Lout.z;
+				    if( super ) {
+						superPoints[x][y][0] += Lout.x;
+						superPoints[x][y][1] += Lout.y;
+						superPoints[x][y][2] += Lout.z;
+					} else {
+						image( x, y, 0 ) += Lout.x;
+						image( x, y, 1 ) += Lout.y;
+						image( x, y, 2 ) += Lout.z;
+				    }
 				}
 
 				//std::cout << "1" << std::endl;
-				continue;
-            }
-			
-            //std::cout << "0" << std::endl;
+            } else {
+				//std::cout << "0" << std::endl;
 
+				/*// Red: increasing from Top to Bottom
+                image(x, y, 0) = (double)y / h;
+                // Green: increasing from Left to Right
+                image(x, y, 1) = (double)x / w;
+                // Blue: in Lower-Left and Upper-Right corners
+                image(x, y, 2) = ((y < h/2 && x < w/2)
+                              || (y >= h/2 && x >= w/2)) ? 1.0 : 0.0;*/
+                if( super ) {
+                    superPoints[x][y][0] = 0;
+                    superPoints[x][y][1] = 0;
+                    superPoints[x][y][2] = 51 / 255.0;
+                } else {
+                    image(x, y, 0) = 0;
+                    image(x, y, 1) = 0;
+                    image(x, y, 2) = 51 / 255.0;
+                }
+			}
 
-
-			/*// Red: increasing from Top to Bottom
-			image(x, y, 0) = (double)y / h;
-			// Green: increasing from Left to Right  
-			image(x, y, 1) = (double)x / w;
-			// Blue: in Lower-Left and Upper-Right corners
-			image(x, y, 2) = ((y < h/2 && x < w/2)
-						  || (y >= h/2 && x >= w/2)) ? 1.0 : 0.0;*/
-
-            image(x, y, 0) = 0;
-            image(x, y, 1) = 0;
-            image(x, y, 2) = 51/255.0;
+			if ( super && x >= 1 && y >= 1 ) {
+				for (uint i = 0; i < 3; i++) {
+					image(x - 1, y - 1, i) = (superPoints[x - 1][y - 1][i]
+											  + superPoints[x - 1][y][i]
+											  + superPoints[x][y - 1][i]
+											  + superPoints[x][y][i]) / 4;
+					//std::cout << image( x-1, y-1, i ) << " ";
+				}
+				//std::cout << std::endl;
+			}
 		}
+	}
+
+	if( super ) {
+		// set width and height back to correct values
+		h--;
+		w--;
 	}
 
 }
