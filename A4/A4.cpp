@@ -47,6 +47,7 @@ void A4_Render(
 
   // Fill in raytracing code here...
   double aspect = (double)image.width() / image.height();
+  glm::vec3 nView = glm::normalize( view );
   const glm::vec3 &right = glm::cross( view, up ) / glm::length( glm::cross( view, up ) );
 
   // get virtual screen parameters
@@ -59,7 +60,7 @@ void A4_Render(
   double pixelSize = vWidth / image.width();
 
   //glm::vec3 topLeft = eye + view - vWidth/2 * right + vHeight/2 * up + pixelSize / 2 * right + pixelSize / 2 * up;
-  glm::vec3 topLeft = eye + view - vWidth/2 * right + vHeight/2 * up;
+  glm::vec3 topLeft = eye + nView - vWidth/2 * right + vHeight/2 * up;
 
   if( !super ) {
       topLeft += pixelSize / 2 * right + pixelSize / 2 * up;
