@@ -11,27 +11,29 @@ Primitive::~Primitive()
 surface Primitive::intersection( ray r ) {}
 
 Sphere::Sphere() {
-    sphere = NonhierSphere( glm::vec3(0), 1 );
+    sphere = new NonhierSphere( glm::vec3(0.0f), 1.0f );
 }
 
 Sphere::~Sphere()
 {
+    delete sphere;
 }
 
 surface Sphere::intersection(ray r) {
-
+    return sphere->intersection( r );
 }
 
 Cube::Cube() {
-    box = NonhierBox( glm::vec3(0), 1 );
+    box = new NonhierBox( glm::vec3(0.5f), 1.0f );
 }
 
 Cube::~Cube()
 {
+    delete box;
 }
 
 surface Cube::intersection(ray r) {
-
+    return box->intersection( r );
 }
 
 NonhierSphere::~NonhierSphere()
@@ -39,6 +41,7 @@ NonhierSphere::~NonhierSphere()
 }
 
 surface NonhierSphere::intersection( ray r ) {
+
     double roots[2];
 
     size_t retval =  quadraticRoots(glm::dot(r.C, r.C),

@@ -29,10 +29,24 @@ void GeometryNode::setMaterial( Material *mat )
 }
 
 surface GeometryNode::intersection( ray r ) {
+    glm::vec4 newE = glm::inverse( hiertrans ) * glm::vec4( r.E, 1.0f );
+    glm::vec4 newP = glm::inverse( hiertrans ) * glm::vec4( r.P, 1.0f );
+
+    r.E = glm::vec3( newE );
+    r.P = glm::vec3( newP );
+
+    r.C = glm::normalize( r.P - r.E );
+
+	//std::cout << r.C.x << " " << r.C.y << " " << r.C.z << std::endl;
+
 	surface s = m_primitive->intersection( r );
 	if( s.intersected ) {
 	    s.mat = ( PhongMaterial * )m_material;
 	    s.n = glm::normalize( s.n );
 	}
+	s.trans = hiertrans;
+	s.intersect_pt = glm::vec3( s.trans * glm::vec4( s.intersect_pt, 1.0f ) );
+
+
 	return s;
 }

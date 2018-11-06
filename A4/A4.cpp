@@ -10,11 +10,21 @@ surface checkIntersect( const SceneNode &node, const ray r ) {
 	surface ret;
 	for( SceneNode *n: node.children ) {
 		// Recursive intersection check
-		checkIntersect( *n, r );
+        surface s;
+
+        // Child intersection
+		s = checkIntersect( *n, r );
+        if( !s.intersected ) {
+        } else if( !ret.intersected ) {
+            ret = s;
+        } else if( s.t < ret.t ) {
+            ret = s;
+        }
+
 		// Check intersection for geometry nodes only
 		if( n->m_nodeType == NodeType::GeometryNode ) {
 			GeometryNode *gNode =  static_cast<GeometryNode *>(n);
-			surface s = gNode->intersection( r );
+			s = gNode->intersection( r );
 			if( !s.intersected ) {
 				continue;
 			} else if( !ret.intersected ) {
@@ -24,14 +34,14 @@ surface checkIntersect( const SceneNode &node, const ray r ) {
 			}
 		}
 	}
-	//std::cout << "no" << std::endl;
 	return ret;
 }
 
 //
 void setTransMat( const SceneNode &node ) {
     for( SceneNode *n: node.children ) {
-        n->hiertrans = n->trans * node.hiertrans;
+        //n->hiertrans = n->trans * node.hiertrans;
+        n->hiertrans = node.hiertrans * n->trans;
         setTransMat( *n );
     }
 }
@@ -64,7 +74,7 @@ void A4_Render(
   double vHeight = 2 * tan(glm::radians(fovy)/2) * screenDist;
   double vWidth = vHeight * aspect;
   
-  std::cout << vHeight << std::endl;
+  //std::cout << vHeight << std::endl;
 
   double pixelSize = vWidth / image.width();
 
@@ -111,8 +121,8 @@ void A4_Render(
 		    ray R;
 			//std::cout << topLeft.x + pixelSize * x << " - " << topLeft.y + pixelSize * y << std::endl;
 			glm::vec3 P( topLeft.x + pixelSize * x, topLeft.y - pixelSize * y, topLeft.z );
-			R.C = P - eye;
 			R.E = eye;
+			R.P = P;
 			// Check if ray intersects object
 			surface s = checkIntersect( *root, R );
 			// if it intersects, calculate the colour through lighting
@@ -127,19 +137,24 @@ void A4_Render(
                     image(x, y, 2) = s.mat->get_kd().z * ambient.z;
                 }
 
-                glm::vec3 v = glm::normalize( -R.C );
+                glm::vec3 newE = glm::vec3( glm::inverse( s.trans ) * glm::vec4( eye, 1.0f ) );
+                glm::vec3 newP = glm::vec3( glm::inverse( s.trans ) * glm::vec4( P, 1.0f ) );
+                glm::vec3 v = glm::normalize( -( newP - newE ) );
 				for( auto *l : lights ) {
 
-				    glm::vec3 p2l = l->position - s.intersect_pt;
-				    glm::vec3 l_dir = glm::normalize( p2l );
-				    double light_dist = glm::length( p2l );
+				    //glm::vec3 p2l = l->position - s.intersect_pt;
+
 
 				    // Check light ray intersection.
 				    ray lR;
 				    lR.E = s.intersect_pt;
 				    //std::cout << glm::to_string( s.intersect_pt ) << std::endl;
-				    lR.C = l_dir;
+				    lR.P = l->position;
+				    //lR.C = l_dir;
 				    if( checkIntersect( *root, lR ).intersected ) continue;
+
+                    glm::vec3 l_dir = glm::normalize( lR.P - lR.E );
+                    double light_dist = glm::length( lR.P - lR.E );
 
 				    glm::vec3 r = -l_dir + 2 * glm::dot( l_dir, s.n ) * s.n;
 				    glm::vec3 Lout =  s.mat->get_kd() * glm::dot( l_dir, s.n ) * l->colour
@@ -147,7 +162,7 @@ void A4_Render(
 
 				    Lout /= ( l->falloff[0] + l->falloff[1] * light_dist + l->falloff[2] * light_dist * light_dist );
 
-				    //std::cout << glm::to_string( Lout ) << std::endl;
+				    //std::cout << glm::to_string(v) << std::endl;
 
 				    if( super ) {
 						superPoints[x][y][0] += Lout.x;
@@ -157,6 +172,8 @@ void A4_Render(
 						image( x, y, 0 ) += Lout.x;
 						image( x, y, 1 ) += Lout.y;
 						image( x, y, 2 ) += Lout.z;
+
+						//std::cout << image( x, y, 0 ) << " " << image( x, y, 1 ) << " " << image( x, y, 2 ) << std::endl;
 				    }
 				}
 

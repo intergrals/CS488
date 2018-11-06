@@ -12,7 +12,7 @@ public:
 };
 
 class Sphere : public Primitive {
-    Primitive sphere;
+    Primitive *sphere;
 public:
     Sphere();
     virtual ~Sphere();
@@ -20,7 +20,7 @@ public:
 };
 
 class Cube : public Primitive {
-    Primitive box;
+    Primitive *box;
 public:
     Cube();
     virtual ~Cube();
