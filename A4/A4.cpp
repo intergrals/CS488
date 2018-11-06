@@ -5,6 +5,7 @@
 #include "A4.hpp"
 #include "GeometryNode.hpp"
 
+// Check every node for intersection.
 surface checkIntersect( const SceneNode &node, const ray r ) {
 	surface ret;
 	for( SceneNode *n: node.children ) {
@@ -25,6 +26,11 @@ surface checkIntersect( const SceneNode &node, const ray r ) {
 	}
 	//std::cout << "no" << std::endl;
 	return ret;
+}
+
+//
+void setTransMat( const SceneNode &node ) {
+
 }
 
 void A4_Render(

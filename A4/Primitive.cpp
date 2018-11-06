@@ -10,12 +10,28 @@ Primitive::~Primitive()
 
 surface Primitive::intersection( ray r ) {}
 
+Sphere::Sphere() {
+    sphere = NonhierSphere( glm::vec3(0), 1 );
+}
+
 Sphere::~Sphere()
 {
 }
 
+surface Sphere::intersection(ray r) {
+
+}
+
+Cube::Cube() {
+    box = NonhierBox( glm::vec3(0), 1 );
+}
+
 Cube::~Cube()
 {
+}
+
+surface Cube::intersection(ray r) {
+
 }
 
 NonhierSphere::~NonhierSphere()

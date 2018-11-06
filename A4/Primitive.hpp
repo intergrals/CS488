@@ -12,13 +12,19 @@ public:
 };
 
 class Sphere : public Primitive {
+    Primitive sphere;
 public:
-  virtual ~Sphere();
+    Sphere();
+    virtual ~Sphere();
+    virtual surface intersection( ray r );
 };
 
 class Cube : public Primitive {
+    Primitive box;
 public:
-  virtual ~Cube();
+    Cube();
+    virtual ~Cube();
+    virtual surface intersection( ray r );
 };
 
 class NonhierSphere : public Primitive {
