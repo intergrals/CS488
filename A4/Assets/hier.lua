@@ -33,10 +33,10 @@ s:scale(4, 0.6, 0.6)
 s:translate(0, 4, 0)
 
 -- the floor
---plane = gr.mesh( 'plane', 'plane.obj' )
---scene:add_child(plane)
---plane:set_material(grass)
---plane:scale(30, 30, 30)
+plane = gr.mesh( 'plane', 'plane.obj' )
+scene:add_child(plane)
+plane:set_material(grass)
+plane:scale(30, 30, 30)
 
 -- sphere
 poly = gr.mesh( 'poly', 'dodeca.obj' )

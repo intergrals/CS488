@@ -6,10 +6,25 @@ mat3 = gr.material({1.0, 0.6, 0.1}, {0.5, 0.7, 0.5}, 25)
 mat4 = gr.material({0.7, 0.6, 1.0}, {0.5, 0.4, 0.8}, 25)
 
 scene_root = gr.node('root')
+scene_root:rotate('X', 23)
+scene_root:translate(6, -2, -15)
 
-s1 = gr.sphere('s1')
-scene_root:add_child(s1)
+arc = gr.node('arc')
+scene_root:add_child(arc)
+arc:translate(0,0,-10)
+arc:rotate('Y', 60)
+
+p1 = gr.cube('p1')
+arc:add_child(p1)
+p1:set_material(mat1)
+p1:scale(0.8, 4, 0.8)
+p1:translate(-2.4, 0, -0.4)
+
+s1 = gr.cube('s1')
+arc:add_child(s1)
 s1:set_material(mat1)
+--s1:scale(1, 2, 1)
+--s1:translate(-0.5, -1, -0.5)
 
 --b1 = gr.nh_box('b1', {-310, -350, 0}, 100)
 --scene_root:add_child(b1)
@@ -33,5 +48,5 @@ white_light = gr.light({0, 0, 400.0}, {0.9, 0.9, 0.9}, {1, 0, 0})
 --orange_light = gr.light({400.0, 100.0, 150.0}, {0.7, 0.0, 0.7}, {1, 0, 0})
 
 gr.render(scene_root, 'test.png', 256, 256,
-	  {0, 0, 15}, {0, 0, -1}, {0, 1, 0}, 50,
+	  {0, 0, 0}, {0, 0, -1}, {0, 1, 0}, 50,
 	  {0.3, 0.3, 0.3}, {white_light, orange_light})

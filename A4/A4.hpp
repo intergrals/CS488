@@ -38,12 +38,14 @@ public:
     double t;
     glm::vec3 intersect_pt;
     glm::vec3 n;
+    glm::vec3 v;
     PhongMaterial *mat = nullptr;
     glm::mat4 trans;
 };
 
 class ray {
 public:
+    glm::vec3 origE;        // Original eye position
     glm::vec3 E;            // Eye / starting point
     glm::vec3 P;			// Screen point
     glm::vec3 C;            // Ray direction

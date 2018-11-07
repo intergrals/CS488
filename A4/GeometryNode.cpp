@@ -29,6 +29,7 @@ void GeometryNode::setMaterial( Material *mat )
 }
 
 surface GeometryNode::intersection( ray r ) {
+    glm::vec3 oldE = r.E;
     glm::vec4 newE = glm::inverse( hiertrans ) * glm::vec4( r.E, 1.0f );
     glm::vec4 newP = glm::inverse( hiertrans ) * glm::vec4( r.P, 1.0f );
 
@@ -46,7 +47,12 @@ surface GeometryNode::intersection( ray r ) {
 	}
 	s.trans = hiertrans;
 	s.intersect_pt = glm::vec3( s.trans * glm::vec4( s.intersect_pt, 1.0f ) );
+	s.n = glm::normalize( glm::vec3( glm::vec4( s.n, 0.0f ) * glm::inverse( s.trans ) ) );
 
+	// re-calculate t
+	s.t = glm::distance( oldE, s.intersect_pt );
+
+	//if( s.intersected ) std::cout << m_name << ": " << s.t << std::endl;
 
 	return s;
 }

@@ -13,8 +13,8 @@ Mesh::Mesh( const std::string& fname )
 	, m_faces()
 {
 
-    double min[3] = {  INFINITY,  INFINITY,  INFINITY };
-    double max[3] = { -INFINITY, -INFINITY, -INFINITY };
+    glm::dvec3 min = {  INFINITY,  INFINITY,  INFINITY };
+    glm::dvec3 max = { -INFINITY, -INFINITY, -INFINITY };
 
 	std::string code;
 	double vx, vy, vz;
@@ -40,14 +40,12 @@ Mesh::Mesh( const std::string& fname )
 	}
 
 	// make bounding box
-	glm::vec3 b_pos;
 	double size = -INFINITY;
 	for ( int i = 0; i < 3; i++ ) {
 	    size = glm::max( size, max[i] - min[i] );
-	    b_pos[i] = ( max[i] + min[i] ) / 2;
 	}
 
-	boundingBox = new NonhierBox( b_pos, size );
+	boundingBox = new NonhierBox( min, size );
 }
 
 // destructor

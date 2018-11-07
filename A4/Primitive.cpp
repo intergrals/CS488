@@ -24,7 +24,7 @@ surface Sphere::intersection(ray r) {
 }
 
 Cube::Cube() {
-    box = new NonhierBox( glm::vec3(0.5f), 1.0f );
+    box = new NonhierBox( glm::vec3(0.0f), 1.0f );
 }
 
 Cube::~Cube()
@@ -106,28 +106,28 @@ surface NonhierBox::intersection( ray r ) {
     glm::vec3 max[6];
 
     // front
-    min[0] = { m_pos.x - m_size/2, m_pos.y - m_size/2, m_pos.z + m_size/2 };
-    max[0] = { m_pos.x + m_size/2, m_pos.y + m_size/2, m_pos.z + m_size/2 };
+    min[0] = { m_pos.x, m_pos.y, m_pos.z + m_size };
+    max[0] = { m_pos.x + m_size, m_pos.y + m_size, m_pos.z + m_size };
 
     // left
-    min[1] = { m_pos.x - m_size/2, m_pos.y - m_size/2, m_pos.z - m_size/2 };
-    max[1] = { m_pos.x - m_size/2, m_pos.y + m_size/2, m_pos.z + m_size/2 };
+    min[1] = { m_pos.x, m_pos.y, m_pos.z };
+    max[1] = { m_pos.x, m_pos.y + m_size, m_pos.z + m_size };
 
     // right
-    min[2] = { m_pos.x + m_size/2, m_pos.y - m_size/2, m_pos.z - m_size/2 };
-    max[2] = { m_pos.x + m_size/2, m_pos.y + m_size/2, m_pos.z + m_size/2 };
+    min[2] = { m_pos.x + m_size, m_pos.y, m_pos.z };
+    max[2] = { m_pos.x + m_size, m_pos.y + m_size, m_pos.z + m_size };
 
     // top
-    min[3] = { m_pos.x - m_size/2, m_pos.y + m_size/2, m_pos.z - m_size/2 };
-    max[3] = { m_pos.x + m_size/2, m_pos.y + m_size/2, m_pos.z + m_size/2 };
+    min[3] = { m_pos.x, m_pos.y + m_size, m_pos.z };
+    max[3] = { m_pos.x + m_size, m_pos.y + m_size, m_pos.z + m_size };
 
     // bottom
-    min[4] = { m_pos.x - m_size/2, m_pos.y - m_size/2, m_pos.z - m_size/2 };
-    max[4] = { m_pos.x + m_size/2, m_pos.y - m_size/2, m_pos.z + m_size/2 };
+    min[4] = { m_pos.x, m_pos.y, m_pos.z };
+    max[4] = { m_pos.x + m_size, m_pos.y, m_pos.z + m_size };
 
     // back
-    min[5] = { m_pos.x - m_size/2, m_pos.y - m_size/2, m_pos.z - m_size/2 };
-    max[5] = { m_pos.x + m_size/2, m_pos.y + m_size/2, m_pos.z - m_size/2 };
+    min[5] = { m_pos.x, m_pos.y, m_pos.z };
+    max[5] = { m_pos.x + m_size, m_pos.y + m_size, m_pos.z };
 
     surface ret;
     surface s[6];
