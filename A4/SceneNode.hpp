@@ -46,7 +46,7 @@ public:
     // Transformations
     glm::mat4 trans;
     glm::mat4 invtrans;
-    glm::mat4 hiertrans;
+    //glm::mat4 hiertrans;
     
     std::list<SceneNode*> children;
 

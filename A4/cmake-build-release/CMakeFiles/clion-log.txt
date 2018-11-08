@@ -1,0 +1,4 @@
+/org/cs/u3/hlpan/clion-2018.2.4/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - Unix Makefiles" /u3/hlpan/cs488/A4
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /u3/hlpan/cs488/A4/cmake-build-release

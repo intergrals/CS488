@@ -28,7 +28,8 @@ void A4_Render(
 );
 
 static const double Epsilon = 0.01;
-static const bool super = false;
+static const bool super = true;
+static const bool bound = false;
 
 
 class surface {
@@ -40,15 +41,16 @@ public:
     glm::vec3 n;
     glm::vec3 v;
     PhongMaterial *mat = nullptr;
-    glm::mat4 trans;
+    //glm::mat4 trans;
 };
 
 class ray {
 public:
-    glm::vec3 origE;        // Original eye position
-    glm::vec3 E;            // Eye / starting point
-    glm::vec3 P;			// Screen point
-    glm::vec3 C;            // Ray direction
-    double tmin = 0;        // minimum t
-    double tmax = INFINITY; // maximum t
+    glm::vec3 origE;                        // Original eye position
+    glm::vec3 E;                            // Eye / starting point
+    glm::vec3 P;			                // Screen point
+    glm::vec3 C;                            // Ray direction
+    double tmin = 0;                        // minimum t
+    double tmax = INFINITY;                 // maximum t
+    glm::mat4 trans = glm::mat4(1.0f);      // transformations applied to ray
 };

@@ -6,8 +6,13 @@
 #include "GeometryNode.hpp"
 
 // Check every node for intersection.
-surface checkIntersect( const SceneNode &node, const ray r ) {
+surface checkIntersect( const SceneNode &node, ray r ) {
 	surface ret;
+
+    r.E = glm::vec3( glm::inverse( node.trans ) * glm::vec4( r.E, 1.0f ) );
+    r.P = glm::vec3( glm::inverse( node.trans ) * glm::vec4( r.P, 1.0f ) );
+    r.trans = r.trans * node.trans;
+
 	for( SceneNode *n: node.children ) {
 		// Recursive intersection check
         surface s;
@@ -37,14 +42,14 @@ surface checkIntersect( const SceneNode &node, const ray r ) {
 	return ret;
 }
 
-//
+/*//
 void setTransMat( const SceneNode &node ) {
     for( SceneNode *n: node.children ) {
         //n->hiertrans = n->trans * node.hiertrans;
         n->hiertrans = node.hiertrans * n->trans;
         setTransMat( *n );
     }
-}
+}*/
 
 void A4_Render(
 		// What to render  
@@ -113,14 +118,16 @@ void A4_Render(
 	}
 
 	// Set hierarchical transformation matrices for all nodes
-	root->hiertrans = root->trans;
-	setTransMat( *root );
+	/*root->hiertrans = root->trans;
+	setTransMat( *root );*/
 
 	for (uint y = 0; y < h; ++y) {
+	    //std::cout << "y = " << y << "\t/" << h << std::endl;
 		for (uint x = 0; x < w; ++x) {
 		    ray R;
 			//std::cout << topLeft.x + pixelSize * x << " - " << topLeft.y + pixelSize * y << std::endl;
 			glm::vec3 P( topLeft.x + pixelSize * x, topLeft.y - pixelSize * y, topLeft.z );
+			R.origE = eye;
 			R.E = eye;
 			R.P = P;
 			// Check if ray intersects object
@@ -137,9 +144,6 @@ void A4_Render(
                     image(x, y, 2) = s.mat->get_kd().z * ambient.z;
                 }
 
-                glm::vec3 newE = glm::vec3( glm::inverse( s.trans ) * glm::vec4( eye, 1.0f ) );
-                glm::vec3 newP = glm::vec3( glm::inverse( s.trans ) * glm::vec4( P, 1.0f ) );
-                glm::vec3 v = glm::normalize( -( newP - newE ) );
 				for( auto *l : lights ) {
 
 				    //glm::vec3 p2l = l->position - s.intersect_pt;
@@ -148,6 +152,7 @@ void A4_Render(
 				    // Check light ray intersection.
 				    ray lR;
 				    lR.E = s.intersect_pt;
+				    lR.origE = s.intersect_pt;
 				    //std::cout << glm::to_string( s.intersect_pt ) << std::endl;
 				    lR.P = l->position;
 				    //lR.C = l_dir;
@@ -158,9 +163,13 @@ void A4_Render(
 
 				    glm::vec3 r = -l_dir + 2 * glm::dot( l_dir, s.n ) * s.n;
 				    glm::vec3 Lout =  s.mat->get_kd() * glm::dot( l_dir, s.n ) * l->colour
-				                    + s.mat->get_ks() * pow( glm::dot( r, v ), s.mat->get_shininess() ) * l->colour;
+				                    + s.mat->get_ks() * pow( glm::dot( r, s.v ), s.mat->get_shininess() ) * l->colour;
 
 				    Lout /= ( l->falloff[0] + l->falloff[1] * light_dist + l->falloff[2] * light_dist * light_dist );
+
+				    Lout[0] = glm::max( Lout[0], 0.0f );
+                    Lout[1] = glm::max( Lout[1], 0.0f );
+                    Lout[2] = glm::max( Lout[2], 0.0f );
 
 				    //std::cout << glm::to_string(v) << std::endl;
 
@@ -190,12 +199,30 @@ void A4_Render(
                               || (y >= h/2 && x >= w/2)) ? 1.0 : 0.0;*/
                 if( super ) {
                     superPoints[x][y][0] = 0;
-                    superPoints[x][y][1] = 0;
-                    superPoints[x][y][2] = 51 / 255.0;
+                    superPoints[x][y][1] = glm::max(1 - ((float)y/h*1.3), 0.2);
+                    superPoints[x][y][2] = glm::max(1 - ((float)y/h*1.3), 0.2);
+
+                    //std::cout << y << " " << h << " " << superPoints[x][y][2] << std::endl;
+
+                    size_t invX = w - x;
+
+                    if ( invX*invX + y*y < (w/5)*(w/5) ) {
+                        superPoints[x][y][0] = 1;
+                        superPoints[x][y][1] = 1;
+                        superPoints[x][y][2] = 0;
+                    }
                 } else {
                     image(x, y, 0) = 0;
-                    image(x, y, 1) = 0;
-                    image(x, y, 2) = 51 / 255.0;
+                    image(x, y, 1) = glm::max(1 - ((float)y/h*1.3), 0.2);
+                    image(x, y, 2) = glm::max(1 - ((float)y/h*1.3), 0.2);
+
+                    size_t invX = w - x;
+
+                    if ( invX*invX + y*y < (w/5)*(w/5) ) {
+                        image(x, y, 0) = 1;
+                        image(x, y, 1) = 1;
+                        image(x, y, 2) = 0;
+                    }
                 }
 			}
 
@@ -209,6 +236,7 @@ void A4_Render(
 				}
 				//std::cout << std::endl;
 			}
+
 		}
 	}
 

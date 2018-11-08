@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="A4"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\clion-2018.2.4\;CMake Files\..\..\clion-2018.2.4\bin\;CMake Files\..\..\clion-2018.2.4\bin\cmake\;CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\;CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\;CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\;CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\;CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\Platform\;CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\Compiler\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/u3/hlpan/cs488/A4/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/u3/hlpan/cs488/A4/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/u3/hlpan/cs488/A4/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="A4">
+				<Option output="/u3/hlpan/cs488/A4/A4" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="../"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/u3/hlpan/cs488/A4/../shared"/>
+					<Add directory="/u3/hlpan/cs488/A4/../shared/include"/>
+					<Add directory="/u3/hlpan/cs488/A4/../shared/gl3w"/>
+					<Add directory="/u3/hlpan/cs488/A4/../shared/imgui"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 A4"/>
+					<CompileFile command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="A4/fast">
+				<Option output="/u3/hlpan/cs488/A4/A4" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="../"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/u3/hlpan/cs488/A4/../shared"/>
+					<Add directory="/u3/hlpan/cs488/A4/../shared/include"/>
+					<Add directory="/u3/hlpan/cs488/A4/../shared/gl3w"/>
+					<Add directory="/u3/hlpan/cs488/A4/../shared/imgui"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 A4/fast"/>
+					<CompileFile command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j6 -f &quot;/u3/hlpan/cs488/A4/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/u3/hlpan/cs488/A4/A4.cpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/A4.hpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/GeometryNode.cpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/GeometryNode.hpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/Image.cpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/Image.hpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/JointNode.cpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/JointNode.hpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/Light.cpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/Light.hpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/Main.cpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/Material.cpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/Material.hpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/Mesh.cpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/Mesh.hpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/PhongMaterial.cpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/PhongMaterial.hpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/Primitive.cpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/Primitive.hpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/SceneNode.cpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/SceneNode.hpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/lua488.hpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/polyroots.cpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/polyroots.hpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/scene_lua.cpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/scene_lua.hpp">
+			<Option target="A4"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/CMakeCInformation.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/CMakeCXXInformation.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/CMakeCommonLanguageInclude.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/CMakeExtraGeneratorDetermineCompilerMacrosAndIncludeDirs.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/CMakeFindCodeBlocks.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/CMakeGenericSystem.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/CMakeInitializeConfigs.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/CMakeLanguageInformation.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/CMakeSystemSpecificInformation.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/CMakeSystemSpecificInitialize.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/ProcessorCount.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/Platform/Linux-GNU-C.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\Platform\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/Platform/Linux-GNU-CXX.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\Platform\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/Platform/Linux-GNU.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\Platform\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/Platform/Linux.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\Platform\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/Platform/UnixPaths.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\Platform\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/Compiler/CMakeCommonCompilerMacros.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\Compiler\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/Compiler/GNU-C.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\Compiler\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/Compiler/GNU-CXX.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\Compiler\"/>
+		</Unit>
+		<Unit filename="/u3/hlpan/cs488/A4/../../clion-2018.2.4/bin/cmake/linux/share/cmake-3.12/Modules/Compiler/GNU.cmake">
+			<Option virtualFolder="CMake Files\..\..\clion-2018.2.4\bin\cmake\linux\share\cmake-3.12\Modules\Compiler\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

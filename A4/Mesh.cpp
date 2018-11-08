@@ -41,6 +41,7 @@ Mesh::Mesh( const std::string& fname )
 
 	// make bounding box
 	double size = -INFINITY;
+	glm::vec3 mid;
 	for ( int i = 0; i < 3; i++ ) {
 	    size = glm::max( size, max[i] - min[i] );
 	}
@@ -133,7 +134,13 @@ surface Mesh::tri_intersection( glm::vec3 &a, glm::vec3 &b, glm::vec3 &c, ray r 
 surface Mesh::intersection( ray r ) {
 	surface ret;
 
-	if( !boundingBox->intersection( r ).intersected ) return ret;
+	surface bounding = boundingBox->intersection( r );
+
+	if( bound ) {
+		return bounding;
+	}
+
+	if( !bounding.intersected ) return bounding;
 
 	for( const auto f: m_faces ) {
 		surface s = tri_intersection( m_vertices[f.v1], m_vertices[f.v2], m_vertices[f.v3], r );
