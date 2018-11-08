@@ -75,3 +75,6 @@ A4_[Ss]olution/A4
 
 # ignore OS files
 .directory
+
+# don't add zips
+*.zip
