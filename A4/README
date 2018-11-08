@@ -8,9 +8,9 @@ Compilation:
 
 The program can be compiled from the A4 directory (the one this file is in) and running the following commands:
 - premake4 gmake
-- make
+- make (config=release)
 afterwards, the compiled program can be run from the same directory using the command:
-- ./A4 [{scene}.lua]
+- ./A4 ({scene}.lua)
 
 My scene can be rendered by calling:
 - ./A4 sample.lua
