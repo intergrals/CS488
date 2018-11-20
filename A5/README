@@ -1,0 +1,37 @@
+CS488 - Fall2018
+Assignment 5
+Hao Pan
+20618961
+
+
+Compilation:
+
+The program can be compiled from the A5 directory (the one this file is in) and running the following commands:
+- premake4 gmake
+- make (config=release)
+afterwards, the compiled program can be run from the same directory using the command:
+- ./A5 ({scene}.lua)
+
+My scene can be rendered by calling:
+- ./A5 sample.lua
+
+The program was compiled on computer gl16 of MC3007.
+
+
+Manual:
+
+Here are details for the implementation:
+- The original code only searches for *.obj files inside the directory in which it's run. Since most of the *.obj files are in the Assets directory, I modified the file search so that it searches for the file in ./Assets if the file is not found in the running directory. An error will also be thrown if the *.obj file is not found at all.
+- My extra implementation is antialiasing via supersampling. I took the average of the corners of each pixel. The option can be turned on and off from the variable "super" in A5.hpp. super is enabled by default.
+- Bounding boxes have been implemented for meshes. The bounding boxes are cubes that encase the entire mesh. The bounding boxes can be rendered instead of the mesh by enabling the variable "bound" in A5.hpp. bound is disabled by default.
+- The background features a gradiant cyan, which becomes darker for lower parts of the image. After reaching a certain point, the colour will stay consistent.
+- A sun is at the top right. Ironically, the sunlight is not very strong (don't want to ruin scene with shadows). There is a stronger source of light coming from the front right.
+- A grass plane covers the lower half of the image.
+- Two figures are on the grass plane. They are hierarchicaly modelled. They each have a body, two eyes, a pupil on each eye, and a mouth. The model is based on a monster known as Slime in the video game series "Dragon Quest". The blue slime is a basic Slime monster, and the silver one is a variety known as Metal Slime.
+- Low quality slime models are provided too. They can be used instead of the high quality models (which have 4x as many faces), to speed up rendering time. The high quality models are used in sample.lua, but the low quality models can be used instead by using simple_sample.lua.
+
+Screenshot info:
+- *_bb.png files have been provided for macho-cows.png and for nonhier.png as requested. Shadows do not properly appear in macho-cows_bb.png. This might be because the plain bounding box is too big, and covers the light source, as evident by how nonhier_bb.png looks.
+- *_nss.png and *_ss.png files have been provided for sample.png, macho-cows.png, and nonhier.png. The *_nss.png file has been rendered without supersampling, and *_ss.png has been rendered with supersampling. The images have an increased resolution to better show the effects of supersampling; however, sample.png has been rendered in 256x256 resolution to show the effects of supersampling in low resolutions.
+- sample_lq.png shows how the sample scene would look if simple_sample.lua was used instead.
+- The file screenshot.png contains a 720x720 rendering of my sample scene with supersampling enabled and using high quality slimes.
