@@ -70,6 +70,7 @@ A5_[Ss]olution/A5
 */.idea/*.iws
 **/.idea/**/workspace.xml
 **/cmake-build-debug/**
+**/cmake-build-release/**
 
 # premake4
 */Makefile
