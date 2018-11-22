@@ -1,6 +1,7 @@
 // Fall 2018
 
 #include <glm/ext.hpp>
+#include <thread>
 
 #include "A5.hpp"
 #include "GeometryNode.hpp"
@@ -42,56 +43,58 @@ surface checkIntersect( const SceneNode &node, ray r ) {
 	return ret;
 }
 
-/*//
-void setTransMat( const SceneNode &node ) {
-    for( SceneNode *n: node.children ) {
-        //n->hiertrans = n->trans * node.hiertrans;
-        n->hiertrans = node.hiertrans * n->trans;
-        setTransMat( *n );
+/* Given parameters about the surface of an intersection point, the light sources, and a list of scene nodes, determine the colour of the intersection point.
+ *  A list of scene nodes is required in order to determine whether a shadow is cast over the point.
+ */
+glm::vec3 getColour( surface s, const std::list<Light *> & lights, SceneNode *root, glm::vec3 ambient ) {
+    glm::vec3 Lout(0);
+
+    for( auto *l : lights ) {
+        // Check light ray intersection.
+        ray lR;
+        lR.E = s.intersect_pt;
+        lR.origE = s.intersect_pt;
+        //std::cout << glm::to_string( s.intersect_pt ) << std::endl;
+        lR.P = l->position;
+        //lR.C = l_dir;
+        if (checkIntersect(*root, lR).intersected) continue;
+
+        glm::vec3 l_dir = glm::normalize(lR.P - lR.E);
+        double light_dist = glm::length(lR.P - lR.E);
+
+        glm::vec3 r = -l_dir + 2 * glm::dot(l_dir, s.n) * s.n;
+        glm::vec3 col = s.mat->get_kd() * glm::dot(l_dir, s.n) * l->colour
+                         + s.mat->get_ks() * pow(glm::dot(r, s.v), s.mat->get_shininess()) * l->colour;
+
+        col /= (l->falloff[0] + l->falloff[1] * light_dist + l->falloff[2] * light_dist * light_dist);
+
+        col[0] = glm::max(col[0], 0.0f);
+        col[1] = glm::max(col[1], 0.0f);
+        col[2] = glm::max(col[2], 0.0f);
+
+        Lout += col;
     }
-}*/
 
-
-glm::vec3 getColour( surface s, Light *l, SceneNode *root ) {
-    // Check light ray intersection.
-    ray lR;
-    lR.E = s.intersect_pt;
-    lR.origE = s.intersect_pt;
-    //std::cout << glm::to_string( s.intersect_pt ) << std::endl;
-    lR.P = l->position;
-    //lR.C = l_dir;
-    if( checkIntersect( *root, lR ).intersected ) return glm::vec3(0);
-
-    glm::vec3 l_dir = glm::normalize( lR.P - lR.E );
-    double light_dist = glm::length( lR.P - lR.E );
-
-    glm::vec3 r = -l_dir + 2 * glm::dot( l_dir, s.n ) * s.n;
-    glm::vec3 Lout =  s.mat->get_kd() * glm::dot( l_dir, s.n ) * l->colour
-                      + s.mat->get_ks() * pow( glm::dot( r, s.v ), s.mat->get_shininess() ) * l->colour;
-
-    Lout /= ( l->falloff[0] + l->falloff[1] * light_dist + l->falloff[2] * light_dist * light_dist );
-
-    Lout[0] = glm::max( Lout[0], 0.0f );
-    Lout[1] = glm::max( Lout[1], 0.0f );
-    Lout[2] = glm::max( Lout[2], 0.0f );
+    // Add ambient light
+    Lout += s.mat->get_kd() * ambient;
 
     return Lout;
 }
 
 void A5_Render(
-		// What to render  
+		// What to render
 		SceneNode * root,
 
 		// Image to write to, set to a given width and height
 		Image & image,
 
-		// Viewing parameters  
+		// Viewing parameters
 		const glm::vec3 & eye,
 		const glm::vec3 & view,
 		const glm::vec3 & up,
 		double fovy,
 
-		// Lighting parameters  
+		// Lighting parameters
 		const glm::vec3 & ambient,
 		const std::list<Light *> & lights
 ) {
@@ -105,7 +108,7 @@ void A5_Render(
   double screenDist = 1;
   double vHeight = 2 * tan(glm::radians(fovy)/2) * screenDist;
   double vWidth = vHeight * aspect;
-  
+
   //std::cout << vHeight << std::endl;
 
   double pixelSize = vWidth / image.width();
@@ -135,6 +138,8 @@ void A5_Render(
 	std::cout << "\t}" << std::endl;
 	std:: cout <<")" << std::endl;
 
+	std::cout << std::endl << "num threads: " << std::thread::hardware_concurrency() << std::endl;
+
 	size_t h = image.height();
 	size_t w = image.width();
 
@@ -161,53 +166,40 @@ void A5_Render(
 			surface s = checkIntersect( *root, R );
 			// if it intersects, calculate the colour through lighting
             if( s.intersected ) {
-                if( super ) {
-                    superPoints[x][y][0] = s.mat->get_kd().x * ambient.x;
-                    superPoints[x][y][1] = s.mat->get_kd().y * ambient.y;
-                    superPoints[x][y][2] = s.mat->get_kd().z * ambient.z;
-                } else {
-                    image(x, y, 0) = s.mat->get_kd().x * ambient.x;
-                    image(x, y, 1) = s.mat->get_kd().y * ambient.y;
-                    image(x, y, 2) = s.mat->get_kd().z * ambient.z;
+
+                // Get surface colour
+                glm::vec3 Lout = getColour( s, lights, root, ambient );
+
+                // Do reflection
+
+                // get reflected eye unit vector
+                glm::vec3 cReflect = glm::normalize( eye - s.intersect_pt );
+                cReflect = -cReflect + 2 * glm::dot( cReflect, s.n ) * s.n;
+
+                // reflected ray
+                ray rR;
+                rR.E = s.intersect_pt;
+                rR.origE = s.intersect_pt;
+                rR.P = s.intersect_pt + cReflect;
+
+                // check intersection of reflected intersection
+                surface rS = checkIntersect( *root, rR );
+                if( rS.intersected ) {
+                    glm::vec3 Lout2 = getColour( rS, lights, root, ambient );
+
+                    // Add reflection colour
+                    Lout = ( glm::vec3(1) - s.mat->get_ks() ) * Lout + s.mat->get_ks() * Lout2;
                 }
 
-				for( auto *l : lights ) {
-
-				    glm::vec3 Lout = getColour( s, l, root );
-
-
-                    // Do reflection
-                    glm::vec3 cReflect = glm::normalize( eye - s.intersect_pt );
-                    cReflect = -cReflect + 2 * glm::dot( cReflect, s.n ) * s.n;
-
-                    // reflected ray
-                    ray rR;
-                    rR.E = s.intersect_pt;
-                    rR.origE = s.intersect_pt;
-                    rR.P = s.intersect_pt + cReflect;
-
-                    // check intersection of reflected intersection
-                    surface rS = checkIntersect( *root, rR );
-                    if( rS.intersected ) {
-                        glm::vec3 Lout2 = getColour( rS, l, root );
-
-                        Lout = ( glm::vec3(1) - s.mat->get_ks() ) * Lout + s.mat->get_ks() * Lout2;
-                    }
-
-				    //std::cout << glm::to_string(v) << std::endl;
-
-				    if( super ) {
-						superPoints[x][y][0] += Lout.x;
-						superPoints[x][y][1] += Lout.y;
-						superPoints[x][y][2] += Lout.z;
-					} else {
-						image( x, y, 0 ) += Lout.x;
-						image( x, y, 1 ) += Lout.y;
-						image( x, y, 2 ) += Lout.z;
-
-						//std::cout << image( x, y, 0 ) << " " << image( x, y, 1 ) << " " << image( x, y, 2 ) << std::endl;
-				    }
-				}
+                if( super ) {
+                    superPoints[x][y][0] = Lout.x;
+                    superPoints[x][y][1] = Lout.y;
+                    superPoints[x][y][2] = Lout.z;
+                } else {
+                    image( x, y, 0 ) = Lout.x;
+                    image( x, y, 1 ) = Lout.y;
+                    image( x, y, 2 ) = Lout.z;
+                }
 
 
 				//std::cout << "1" << std::endl;
