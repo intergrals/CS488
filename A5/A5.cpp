@@ -51,11 +51,38 @@ void setTransMat( const SceneNode &node ) {
     }
 }*/
 
+
+glm::vec3 getColour( surface s, Light *l, SceneNode *root ) {
+    // Check light ray intersection.
+    ray lR;
+    lR.E = s.intersect_pt;
+    lR.origE = s.intersect_pt;
+    //std::cout << glm::to_string( s.intersect_pt ) << std::endl;
+    lR.P = l->position;
+    //lR.C = l_dir;
+    if( checkIntersect( *root, lR ).intersected ) return glm::vec3(0);
+
+    glm::vec3 l_dir = glm::normalize( lR.P - lR.E );
+    double light_dist = glm::length( lR.P - lR.E );
+
+    glm::vec3 r = -l_dir + 2 * glm::dot( l_dir, s.n ) * s.n;
+    glm::vec3 Lout =  s.mat->get_kd() * glm::dot( l_dir, s.n ) * l->colour
+                      + s.mat->get_ks() * pow( glm::dot( r, s.v ), s.mat->get_shininess() ) * l->colour;
+
+    Lout /= ( l->falloff[0] + l->falloff[1] * light_dist + l->falloff[2] * light_dist * light_dist );
+
+    Lout[0] = glm::max( Lout[0], 0.0f );
+    Lout[1] = glm::max( Lout[1], 0.0f );
+    Lout[2] = glm::max( Lout[2], 0.0f );
+
+    return Lout;
+}
+
 void A5_Render(
 		// What to render  
 		SceneNode * root,
 
-		// Image to write to, set to a given width and height  
+		// Image to write to, set to a given width and height
 		Image & image,
 
 		// Viewing parameters  
@@ -146,30 +173,26 @@ void A5_Render(
 
 				for( auto *l : lights ) {
 
-				    //glm::vec3 p2l = l->position - s.intersect_pt;
+				    glm::vec3 Lout = getColour( s, l, root );
 
 
-				    // Check light ray intersection.
-				    ray lR;
-				    lR.E = s.intersect_pt;
-				    lR.origE = s.intersect_pt;
-				    //std::cout << glm::to_string( s.intersect_pt ) << std::endl;
-				    lR.P = l->position;
-				    //lR.C = l_dir;
-				    if( checkIntersect( *root, lR ).intersected ) continue;
+                    // Do reflection
+                    glm::vec3 cReflect = glm::normalize( eye - s.intersect_pt );
+                    cReflect = -cReflect + 2 * glm::dot( cReflect, s.n ) * s.n;
 
-                    glm::vec3 l_dir = glm::normalize( lR.P - lR.E );
-                    double light_dist = glm::length( lR.P - lR.E );
+                    // reflected ray
+                    ray rR;
+                    rR.E = s.intersect_pt;
+                    rR.origE = s.intersect_pt;
+                    rR.P = s.intersect_pt + cReflect;
 
-				    glm::vec3 r = -l_dir + 2 * glm::dot( l_dir, s.n ) * s.n;
-				    glm::vec3 Lout =  s.mat->get_kd() * glm::dot( l_dir, s.n ) * l->colour
-				                    + s.mat->get_ks() * pow( glm::dot( r, s.v ), s.mat->get_shininess() ) * l->colour;
+                    // check intersection of reflected intersection
+                    surface rS = checkIntersect( *root, rR );
+                    if( rS.intersected ) {
+                        glm::vec3 Lout2 = getColour( rS, l, root );
 
-				    Lout /= ( l->falloff[0] + l->falloff[1] * light_dist + l->falloff[2] * light_dist * light_dist );
-
-				    Lout[0] = glm::max( Lout[0], 0.0f );
-                    Lout[1] = glm::max( Lout[1], 0.0f );
-                    Lout[2] = glm::max( Lout[2], 0.0f );
+                        Lout = ( glm::vec3(1) - s.mat->get_ks() ) * Lout + s.mat->get_ks() * Lout2;
+                    }
 
 				    //std::cout << glm::to_string(v) << std::endl;
 
@@ -185,6 +208,7 @@ void A5_Render(
 						//std::cout << image( x, y, 0 ) << " " << image( x, y, 1 ) << " " << image( x, y, 2 ) << std::endl;
 				    }
 				}
+
 
 				//std::cout << "1" << std::endl;
             } else {
