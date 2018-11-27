@@ -2,6 +2,7 @@
 
 #include <glm/ext.hpp>
 #include <thread>
+#include <mutex>
 
 #include "A5.hpp"
 #include "GeometryNode.hpp"
@@ -81,6 +82,135 @@ glm::vec3 getColour( surface s, const std::list<Light *> & lights, SceneNode *ro
     return Lout;
 }
 
+
+std::mutex mtx;
+
+void makeImage( glm::vec3 **superPoints, Image &image,
+                size_t h, size_t w,
+                uint &globalx, uint &globaly,
+                glm::vec3 eye, glm::vec3 topLeft, double pixelSize,
+                SceneNode *root, const std::list<Light *> & lights,
+                glm::vec3 ambient ) {
+
+    while (1) {
+        // set x and y
+        uint x, y;
+        mtx.lock();
+        x = globalx;
+        y = globaly;
+
+        if (x < w - 1) {
+            globalx++;
+        } else if (y < h - 1) {
+            globalx = 0;
+            globaly++;
+
+            std::cout << globaly << std::endl;
+        } else {
+            mtx.unlock();
+            return;
+        }
+        mtx.unlock();
+
+        ray R;
+        glm::vec3 P(topLeft.x + pixelSize * x, topLeft.y - pixelSize * y, topLeft.z);
+        R.origE = eye;
+        R.E = eye;
+        R.P = P;
+        // Check if ray intersects object
+        surface s = checkIntersect(*root, R);
+        // if it intersects, calculate the colour through lighting
+        if (s.intersected) {
+
+            // Get surface colour
+            glm::vec3 Lout = getColour(s, lights, root, ambient);
+
+            // Do reflection
+
+            // get reflected eye unit vector
+            glm::vec3 cReflect = glm::normalize(eye - s.intersect_pt);
+            cReflect = -cReflect + 2 * glm::dot(cReflect, s.n) * s.n;
+
+            // reflected ray
+            ray rR;
+            rR.E = s.intersect_pt;
+            rR.origE = s.intersect_pt;
+            rR.P = s.intersect_pt + cReflect;
+
+            // check intersection of reflected intersection
+            surface rS = checkIntersect(*root, rR);
+            if (rS.intersected) {
+                glm::vec3 Lout2 = getColour(rS, lights, root, ambient);
+
+                // Add reflection colour
+                Lout = (glm::vec3(1) - s.mat->get_ks()) * Lout + s.mat->get_ks() * Lout2;
+            }
+
+            if (super) {
+                superPoints[x][y][0] = Lout.x;
+                superPoints[x][y][1] = Lout.y;
+                superPoints[x][y][2] = Lout.z;
+            } else {
+                image(x, y, 0) = Lout.x;
+                image(x, y, 1) = Lout.y;
+                image(x, y, 2) = Lout.z;
+            }
+        } else {
+            if (super) {
+                superPoints[x][y][0] = 0;
+                superPoints[x][y][1] = glm::max(1 - ((float) y / h * 1.3), 0.2);
+                superPoints[x][y][2] = glm::max(1 - ((float) y / h * 1.3), 0.2);
+
+                //std::cout << y << " " << h << " " << superPoints[x][y][2] << std::endl;
+
+                size_t invX = w - x;
+
+                if (invX * invX + y * y < (w / 5) * (w / 5)) {
+                    superPoints[x][y][0] = 1;
+                    superPoints[x][y][1] = 1;
+                    superPoints[x][y][2] = 0;
+                }
+            } else {
+                image(x, y, 0) = 0;
+                image(x, y, 1) = glm::max(1 - ((float) y / h * 1.3), 0.2);
+                image(x, y, 2) = glm::max(1 - ((float) y / h * 1.3), 0.2);
+
+                size_t invX = w - x;
+
+                if (invX * invX + y * y < (w / 5) * (w / 5)) {
+                    image(x, y, 0) = 1;
+                    image(x, y, 1) = 1;
+                    image(x, y, 2) = 0;
+                }
+            }
+        }
+    }
+}
+
+
+void test( uint &x, uint &y ) {
+    while(1) {
+        //std::cout << x << " " << y << " " << std::this_thread::get_id() << std::endl;
+
+        for( int i = 0; i < 1000; i++ ) {
+            std::pow(std::log(x*y), y);
+        }
+
+        mtx.lock();
+        if (x < 256) {
+            x++;
+        } else if (y < 256) {
+            y++;
+            x = 0;
+        } else {
+            mtx.unlock();
+            return;
+        }
+        mtx.unlock();
+    }
+
+}
+
 void A5_Render(
 		// What to render
 		SceneNode * root,
@@ -143,118 +273,54 @@ void A5_Render(
 	size_t h = image.height();
 	size_t w = image.width();
 
-    glm::vec3 superPoints[w+1][h+1];
+	// constructing superPoints array
+    glm::vec3 **superPoints/*[w+1][h+1]*/;
+    superPoints = new glm::vec3 *[w+1];
+    for( int i = 0; i <= w; i++ ) {
+        superPoints[i] = new glm::vec3[h+1];
+    }
+
 	if ( super ) {
         h++;
         w++;
 	}
 
-	// Set hierarchical transformation matrices for all nodes
-	/*root->hiertrans = root->trans;
-	setTransMat( *root );*/
+	// Make an array of threads
+	int numThreads = std::thread::hardware_concurrency();
+	//numThreads = 1;
+    std::thread renderThread[numThreads];
 
-	for (uint y = 0; y < h; ++y) {
-	    //std::cout << "y = " << y << "\t/" << h << std::endl;
-		for (uint x = 0; x < w; ++x) {
-		    ray R;
-			//std::cout << topLeft.x + pixelSize * x << " - " << topLeft.y + pixelSize * y << std::endl;
-			glm::vec3 P( topLeft.x + pixelSize * x, topLeft.y - pixelSize * y, topLeft.z );
-			R.origE = eye;
-			R.E = eye;
-			R.P = P;
-			// Check if ray intersects object
-			surface s = checkIntersect( *root, R );
-			// if it intersects, calculate the colour through lighting
-            if( s.intersected ) {
+    uint globalx = 0;
+    uint globaly = 0;
 
-                // Get surface colour
-                glm::vec3 Lout = getColour( s, lights, root, ambient );
+    // Render each pixel concurrently
+    for( int i = 0; i < numThreads; i++ ) {
+        //Test: renderThread[i] = std::thread(test, std::ref(x), std::ref(y));
+        renderThread[i] = std::thread( makeImage, superPoints, std::ref(image), h, w, std::ref(globalx), std::ref(globaly), eye, topLeft, pixelSize, root, lights, ambient );
+    }
+    for( int i = 0; i < numThreads; i++ ) {
+        renderThread[i].join();
+    }
 
-                // Do reflection
-
-                // get reflected eye unit vector
-                glm::vec3 cReflect = glm::normalize( eye - s.intersect_pt );
-                cReflect = -cReflect + 2 * glm::dot( cReflect, s.n ) * s.n;
-
-                // reflected ray
-                ray rR;
-                rR.E = s.intersect_pt;
-                rR.origE = s.intersect_pt;
-                rR.P = s.intersect_pt + cReflect;
-
-                // check intersection of reflected intersection
-                surface rS = checkIntersect( *root, rR );
-                if( rS.intersected ) {
-                    glm::vec3 Lout2 = getColour( rS, lights, root, ambient );
-
-                    // Add reflection colour
-                    Lout = ( glm::vec3(1) - s.mat->get_ks() ) * Lout + s.mat->get_ks() * Lout2;
-                }
-
-                if( super ) {
-                    superPoints[x][y][0] = Lout.x;
-                    superPoints[x][y][1] = Lout.y;
-                    superPoints[x][y][2] = Lout.z;
-                } else {
-                    image( x, y, 0 ) = Lout.x;
-                    image( x, y, 1 ) = Lout.y;
-                    image( x, y, 2 ) = Lout.z;
-                }
-
-
-				//std::cout << "1" << std::endl;
-            } else {
-				//std::cout << "0" << std::endl;
-
-				/*// Red: increasing from Top to Bottom
-                image(x, y, 0) = (double)y / h;
-                // Green: increasing from Left to Right
-                image(x, y, 1) = (double)x / w;
-                // Blue: in Lower-Left and Upper-Right corners
-                image(x, y, 2) = ((y < h/2 && x < w/2)
-                              || (y >= h/2 && x >= w/2)) ? 1.0 : 0.0;*/
-                if( super ) {
-                    superPoints[x][y][0] = 0;
-                    superPoints[x][y][1] = glm::max(1 - ((float)y/h*1.3), 0.2);
-                    superPoints[x][y][2] = glm::max(1 - ((float)y/h*1.3), 0.2);
-
-                    //std::cout << y << " " << h << " " << superPoints[x][y][2] << std::endl;
-
-                    size_t invX = w - x;
-
-                    if ( invX*invX + y*y < (w/5)*(w/5) ) {
-                        superPoints[x][y][0] = 1;
-                        superPoints[x][y][1] = 1;
-                        superPoints[x][y][2] = 0;
+    // handle supersampling
+    if( super ) {
+        for (uint y = 0; y < h; y++) {
+            for (uint x = 0; x < w; x++) {
+                if (x >= 1 && y >= 1) {
+                    for (uint i = 0; i < 3; i++) {
+                        image(x - 1, y - 1, i) = (superPoints[x - 1][y - 1][i]
+                                                  + superPoints[x - 1][y][i]
+                                                  + superPoints[x][y - 1][i]
+                                                  + superPoints[x][y][i]) / 4;
+                        //std::cout << image( x-1, y-1, i ) << " ";
                     }
-                } else {
-                    image(x, y, 0) = 0;
-                    image(x, y, 1) = glm::max(1 - ((float)y/h*1.3), 0.2);
-                    image(x, y, 2) = glm::max(1 - ((float)y/h*1.3), 0.2);
-
-                    size_t invX = w - x;
-
-                    if ( invX*invX + y*y < (w/5)*(w/5) ) {
-                        image(x, y, 0) = 1;
-                        image(x, y, 1) = 1;
-                        image(x, y, 2) = 0;
-                    }
+                    //std::cout << std::endl;
                 }
-			}
+            }
+        }
+    }
 
-			if ( super && x >= 1 && y >= 1 ) {
-				for (uint i = 0; i < 3; i++) {
-					image(x - 1, y - 1, i) = (superPoints[x - 1][y - 1][i]
-											  + superPoints[x - 1][y][i]
-											  + superPoints[x][y - 1][i]
-											  + superPoints[x][y][i]) / 4;
-					//std::cout << image( x-1, y-1, i ) << " ";
-				}
-				//std::cout << std::endl;
-			}
 
-		}
-	}
 
 	if( super ) {
 		// set width and height back to correct values
