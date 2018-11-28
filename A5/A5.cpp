@@ -83,8 +83,77 @@ glm::vec3 getColour( surface s, const std::list<Light *> & lights, SceneNode *ro
 }
 
 
-std::mutex mtx;
+// Get the colour of the reflection cast from a surface. There will only be one reflective iteration.
+glm::vec3 getReflection( glm::vec3 eye, surface s, SceneNode *root, const std::list<Light *> & lights, glm::vec3 ambient ) {
 
+    glm::vec3 cReflect = glm::normalize(eye - s.intersect_pt);
+    cReflect = -cReflect + 2 * glm::dot(cReflect, s.n) * s.n;
+
+    // reflected ray
+    ray rR;
+    rR.E = s.intersect_pt;
+    rR.origE = s.intersect_pt;
+    rR.P = s.intersect_pt + cReflect;
+
+    // check intersection of reflected intersection
+    surface rS = checkIntersect(*root, rR);
+    if (rS.intersected) {
+        return getColour(rS, lights, root, ambient);
+    } else {
+        return glm::vec3(-1);
+    }
+}
+
+// Cast a ray from the eye to a projected x and y point relative to a screen denoted by topLeft.
+glm::vec3 castRayTo(float x, float y,
+                    size_t h, size_t w,
+                    glm::vec3 eye, glm::vec3 topLeft, double pixelSize,
+                    SceneNode *root, const std::list<Light *> & lights,
+                    glm::vec3 ambient ) {
+    ray R;
+    glm::vec3 P(topLeft.x + pixelSize * x, topLeft.y - pixelSize * y, topLeft.z);
+    R.origE = eye;
+    R.E = eye;
+    R.P = P;
+    // Check if ray intersects object
+    surface s = checkIntersect(*root, R);
+    // if it intersects, calculate the colour through lighting
+    if (s.intersected) {
+
+        // Get surface colour
+        glm::vec3 Lout = getColour(s, lights, root, ambient);
+
+        // Do reflection
+
+        if (reflect && s.mat->get_ks().x != 0 && s.mat->get_ks().y != 0 && s.mat->get_ks().z != 0) {
+            glm::vec3 Lout2 = getReflection(eye, s, root, lights, ambient);
+            if (Lout2.x != -1 && Lout2.y != -1 && Lout2.z != -1)
+                Lout = (glm::vec3(1) - s.mat->get_ks()) * Lout + s.mat->get_ks() * Lout2;
+        }
+        return Lout;
+    } else {
+        glm::vec3 Lout;
+
+        Lout.x = 0;
+        Lout.y = (float) glm::max( 1 - ( y / h * 1.3 ), 0.2 );
+        Lout.z = (float) glm::max( 1 - ( y / h * 1.3 ), 0.2 );
+
+        //std::cout << y << " " << h << " " << superPoints[x][y][2] << std::endl;
+
+        float invX = w - x;
+
+        if ( invX * invX + y * y < (w / 5.0) * (w / 5.0) ) {
+            Lout.x = 1;
+            Lout.y = 1;
+            Lout.z = 0;
+        }
+
+        return Lout;
+    }
+}
+
+// Make the image.
+std::mutex mtx;
 void makeImage( glm::vec3 **superPoints, Image &image,
                 size_t h, size_t w,
                 uint &globalx, uint &globaly,
@@ -104,90 +173,140 @@ void makeImage( glm::vec3 **superPoints, Image &image,
         } else if (y < h - 1) {
             globalx = 0;
             globaly++;
-
-            std::cout << globaly << std::endl;
         } else {
             mtx.unlock();
             return;
         }
         mtx.unlock();
 
-        ray R;
-        glm::vec3 P(topLeft.x + pixelSize * x, topLeft.y - pixelSize * y, topLeft.z);
-        R.origE = eye;
-        R.E = eye;
-        R.P = P;
-        // Check if ray intersects object
-        surface s = checkIntersect(*root, R);
-        // if it intersects, calculate the colour through lighting
-        if (s.intersected) {
+        glm::vec3 Lout = castRayTo( x, y, h, w, eye, topLeft, pixelSize, root, lights, ambient );
 
-            // Get surface colour
-            glm::vec3 Lout = getColour(s, lights, root, ambient);
-
-            // Do reflection
-
-            // get reflected eye unit vector
-            glm::vec3 cReflect = glm::normalize(eye - s.intersect_pt);
-            cReflect = -cReflect + 2 * glm::dot(cReflect, s.n) * s.n;
-
-            // reflected ray
-            ray rR;
-            rR.E = s.intersect_pt;
-            rR.origE = s.intersect_pt;
-            rR.P = s.intersect_pt + cReflect;
-
-            // check intersection of reflected intersection
-            surface rS = checkIntersect(*root, rR);
-            if (rS.intersected) {
-                glm::vec3 Lout2 = getColour(rS, lights, root, ambient);
-
-                // Add reflection colour
-                Lout = (glm::vec3(1) - s.mat->get_ks()) * Lout + s.mat->get_ks() * Lout2;
-            }
-
-            if (super) {
-                superPoints[x][y][0] = Lout.x;
-                superPoints[x][y][1] = Lout.y;
-                superPoints[x][y][2] = Lout.z;
-            } else {
-                image(x, y, 0) = Lout.x;
-                image(x, y, 1) = Lout.y;
-                image(x, y, 2) = Lout.z;
-            }
+        if (super) {
+            superPoints[x][y][0] = Lout.x;
+            superPoints[x][y][1] = Lout.y;
+            superPoints[x][y][2] = Lout.z;
         } else {
-            if (super) {
-                superPoints[x][y][0] = 0;
-                superPoints[x][y][1] = glm::max(1 - ((float) y / h * 1.3), 0.2);
-                superPoints[x][y][2] = glm::max(1 - ((float) y / h * 1.3), 0.2);
+            image(x, y, 0) = Lout.x;
+            image(x, y, 1) = Lout.y;
+            image(x, y, 2) = Lout.z;
+        }
+    }
+}
 
-                //std::cout << y << " " << h << " " << superPoints[x][y][2] << std::endl;
+// Get colour difference of two pixels.
+float getColourDiff( Image &image, uint x1, uint y1, uint x2, uint y2 ) {
+    if( x1 < 0 || x2 < 0 || y1 < 0 || y2 < 0 ) {
+        std::cerr << "ERROR: Indices out of bounds when retrieving colour difference." << std::endl;
+        exit(1);
+    }
 
-                size_t invX = w - x;
+    return float( glm::sqrt( glm::pow( image(x1, y1, 0) - image(x2, y2, 0), 2 ) + glm::pow( image(x1, y1, 1) - image(x2, y2, 1), 2 ) + glm::pow( image(x1, y1, 2) - image(x2, y2, 2), 2 ) ) );
+}
 
-                if (invX * invX + y * y < (w / 5) * (w / 5)) {
-                    superPoints[x][y][0] = 1;
-                    superPoints[x][y][1] = 1;
-                    superPoints[x][y][2] = 0;
-                }
-            } else {
-                image(x, y, 0) = 0;
-                image(x, y, 1) = glm::max(1 - ((float) y / h * 1.3), 0.2);
-                image(x, y, 2) = glm::max(1 - ((float) y / h * 1.3), 0.2);
 
-                size_t invX = w - x;
+void adaptiveAA(    Image &aImage, Image &image,
+                    size_t w, size_t h,
+                    uint &globalx, uint &globaly,
+                    glm::vec3 eye, glm::vec3 topLeft, double pixelSize,
+                    SceneNode *root, const std::list<Light *> & lights,
+                    glm::vec3 ambient ) {
+    while (1) {
+        // set x and y
+        uint x, y;
+        mtx.lock();
+        x = globalx;
+        y = globaly;
 
-                if (invX * invX + y * y < (w / 5) * (w / 5)) {
-                    image(x, y, 0) = 1;
-                    image(x, y, 1) = 1;
-                    image(x, y, 2) = 0;
-                }
+        if (x < w - 1) {
+            globalx++;
+        } else if (y < h - 1) {
+            globalx = 0;
+            globaly++;
+        } else {
+            mtx.unlock();
+            return;
+        }
+        mtx.unlock();
+
+        float colourDiff = 0;
+        // cmp with left
+        if (x != 0) {
+            colourDiff = glm::max(colourDiff, getColourDiff(image, x, y, x - 1, y));
+        }
+        // cmp with right
+        if (x != w - 1) {
+            colourDiff = glm::max(colourDiff, getColourDiff(image, x, y, x + 1, y));
+        }
+        // cmp with bottom
+        if (y != 0) {
+            colourDiff = glm::max(colourDiff, getColourDiff(image, x, y, x, y - 1));
+        }
+        // cmp with top
+        if (y != h - 1) {
+            colourDiff = glm::max(colourDiff, getColourDiff(image, x, y, x, y + 1));
+        }
+
+        if (colourDiff > 0.1) {
+            if (showAdaptive) {
+                aImage(x, y, 0) = 0;
+                aImage(x, y, 1) = 1;
+                aImage(x, y, 2) = 0;
             }
+
+            glm::vec3 sampledPoints(0);
+            if( Adaptive == 2 ) {
+                sampledPoints += castRayTo(x +  4.0f/16, y +  4.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x + -4.0f/16, y + -4.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints /= 2;
+            } else if( Adaptive == 4 ) {
+                // Sample 4 points inside pixel (https://docs.microsoft.com/en-us/windows/desktop/api/d3d11/ne-d3d11-d3d11_standard_multisample_quality_levels)
+                sampledPoints += castRayTo(x + -2.0f/16, y + -6.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x +  6.0f/16, y + -2.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x + -6.0f/16, y +  2.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x +  2.0f/16, y +  6.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints /= 4;
+            } else if( Adaptive == 8 ) {
+                sampledPoints += castRayTo(x +  1.0f/16, y + -3.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x + -1.0f/16, y + -3.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x +  5.0f/16, y +  1.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x + -3.0f/16, y + -5.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x + -5.0f/16, y +  5.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x + -7.0f/16, y +  1.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x +  3.0f/16, y +  7.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x +  7.0f/16, y + -7.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints /= 8;
+            } else if( Adaptive == 16 ) {
+                sampledPoints += castRayTo(x +  1.0f/16, y +  1.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x + -1.0f/16, y + -3.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x + -3.0f/16, y +  2.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x +  4.0f/16, y + -1.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x + -5.0f/16, y + -2.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x +  2.0f/16, y +  5.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x +  5.0f/16, y +  3.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x +  3.0f/16, y + -5.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x + -2.0f/16, y +  6.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x +  0.0f/16, y + -7.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x + -4.0f/16, y + -6.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x + -6.0f/16, y +  4.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x + -8.0f/16, y +  0.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x +  7.0f/16, y + -4.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x +  6.0f/16, y +  7.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints += castRayTo(x + -7.0f/16, y + -8.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
+                sampledPoints /= 16;
+            } else {
+                    std::cerr << "ERROR: Antialiasing must be one of {1, 2, 4, 8, 16}." << std::endl;
+            }
+
+            aImage(x, y, 0) = sampledPoints.r;
+            aImage(x, y, 1) = sampledPoints.g;
+            aImage(x, y, 2) = sampledPoints.b;
+
         }
     }
 }
 
 
+// TEST multithreading
 void test( uint &x, uint &y ) {
     while(1) {
         //std::cout << x << " " << y << " " << std::this_thread::get_id() << std::endl;
@@ -252,6 +371,7 @@ void A5_Render(
 
   std::cout << "Calling A5_Render(\n" <<
 		  "\t" << *root <<
+		  "\t" << "numthreads: " << ( mthread? std::thread::hardware_concurrency() : 1 ) << std::endl <<
 		  "\t" << "Supersampling: " << ( super? "ON" : "OFF" ) << std::endl <<
           "\t" << "Image(width:" << image.width() << ", height:" << image.height() << ")\n"
           "\t" << "eye:  " << glm::to_string(eye) << std::endl <<
@@ -267,8 +387,6 @@ void A5_Render(
 	}
 	std::cout << "\t}" << std::endl;
 	std:: cout <<")" << std::endl;
-
-	std::cout << std::endl << "num threads: " << std::thread::hardware_concurrency() << std::endl;
 
 	size_t h = image.height();
 	size_t w = image.width();
@@ -286,8 +404,7 @@ void A5_Render(
 	}
 
 	// Make an array of threads
-	int numThreads = std::thread::hardware_concurrency();
-	//numThreads = 1;
+	int numThreads = mthread? std::thread::hardware_concurrency() : 1;
     std::thread renderThread[numThreads];
 
     uint globalx = 0;
@@ -320,12 +437,28 @@ void A5_Render(
         }
     }
 
-
+    // concurrently do adaptive antialiased image
+    if( Adaptive > 1 ) {
+        Image aImage = image;
+        globalx = 0;
+        globaly = 0;
+        for (int i = 0; i < numThreads; i++) {
+            //Test: renderThread[i] = std::thread(test, std::ref(x), std::ref(y));
+            renderThread[i] = std::thread(adaptiveAA, std::ref(aImage), std::ref(image), w, h, std::ref(globalx),
+                                          std::ref(globaly), eye, topLeft, pixelSize, root, lights, ambient);
+        }
+        for (int i = 0; i < numThreads; i++) {
+            renderThread[i].join();
+        }
+        image = aImage;
+    }
 
 	if( super ) {
 		// set width and height back to correct values
 		h--;
 		w--;
 	}
+
+	// TODO: Delete superpts.
 
 }

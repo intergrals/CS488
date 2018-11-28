@@ -28,8 +28,12 @@ void A5_Render(
 );
 
 static const double Epsilon = 0.01;
-static const bool super = true;
+static const bool super = false;
 static const bool bound = false;
+static const bool reflect = true;
+static const bool mthread = true;
+static const bool showAdaptive = false;
+static const uint Adaptive = 16;
 
 
 class surface {
