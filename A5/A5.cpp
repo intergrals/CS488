@@ -9,6 +9,24 @@
 #include "A5.hpp"
 #include "GeometryNode.hpp"
 
+
+void loading( float percent ) {
+    float p = percent;
+    std::cout << '[';
+    for( int i = 0; i < 25; i++ ) {
+        if( percent >= 4 ) {
+            std::cout << '#';
+            percent -= 4;
+        } else if(percent >= 2) {
+            std::cout << '=';
+            percent -= 2;
+        } else {
+            std::cout << '-';
+        }
+    }
+    std::cout << ']' << '\t' << p << '%' << '\r' << std::flush;
+}
+
 // Check every node for intersection.
 surface checkIntersect( const SceneNode &node, ray r ) {
 	surface ret;
@@ -69,7 +87,7 @@ glm::vec3 getColour( surface s, const std::list<Light *> & lights, SceneNode *ro
             if(checkIntersect(*root, lR).intersected) {
                 numConts++;
                 continue;
-            } else if(  numConts == 0 && i > SoftShad/8 ) {
+            } else if(  numConts == 0 && i > SoftShad/4 ) {
                 // If no shadows are being hit, just move onto the next pixel
                 lR.P = l->position;
                 moveOn = true;
@@ -199,7 +217,7 @@ void makeImage( glm::vec3 **superPoints, Image &image,
             globalx = 0;
             globaly++;
 
-            std::cout << std::setprecision(0) << (y* ( (Adaptive == 1)? 100 : 50 ) ) /h << '\r' << std::flush;
+            loading( y * ( (Adaptive == 1)? 100 : 50 ) / h );
         } else {
             mtx.unlock();
             return;
@@ -250,7 +268,7 @@ void adaptiveAA(    Image &aImage, Image &image,
             globalx = 0;
             globaly++;
 
-            std::cout << std::setprecision(0) << 50 + (y*50)/h << '\r' << std::flush;
+            loading( 50 + (y*50)/h );
         } else {
             mtx.unlock();
             return;
@@ -487,6 +505,8 @@ void A5_Render(
 		h--;
 		w--;
 	}
+
+    loading( 100 );
 
 	// TODO: Delete superpts.
 
