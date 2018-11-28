@@ -3,6 +3,8 @@
 #include <glm/ext.hpp>
 #include <thread>
 #include <mutex>
+#include <random>
+#include <iomanip>
 
 #include "A5.hpp"
 #include "GeometryNode.hpp"
@@ -47,33 +49,56 @@ surface checkIntersect( const SceneNode &node, ray r ) {
 /* Given parameters about the surface of an intersection point, the light sources, and a list of scene nodes, determine the colour of the intersection point.
  *  A list of scene nodes is required in order to determine whether a shadow is cast over the point.
  */
+std::random_device rd;
+std::mt19937 mt(rd());
 glm::vec3 getColour( surface s, const std::list<Light *> & lights, SceneNode *root, glm::vec3 ambient ) {
     glm::vec3 Lout(0);
+    float distRange = ( SoftShad == 1 )? 0 : 1;
+    std::uniform_real_distribution<double> dist(-distRange, distRange);
 
+    ray lR;
+    lR.E = s.intersect_pt;
+    lR.origE = s.intersect_pt;
     for( auto *l : lights ) {
         // Check light ray intersection.
-        ray lR;
-        lR.E = s.intersect_pt;
-        lR.origE = s.intersect_pt;
-        //std::cout << glm::to_string( s.intersect_pt ) << std::endl;
-        lR.P = l->position;
-        //lR.C = l_dir;
-        if (checkIntersect(*root, lR).intersected) continue;
+        glm::vec3 colAccumulator(0);
+        uint numConts = 0;
+        bool moveOn = false;
+        for( int i = 0; i < SoftShad; i++ ) {
+            lR.P = l->position + glm::normalize( glm::vec3( dist(mt), dist(mt), dist(mt) ) );
+            if(checkIntersect(*root, lR).intersected) {
+                numConts++;
+                continue;
+            } else if(  numConts == 0 && i > SoftShad/8 ) {
+                // If no shadows are being hit, just move onto the next pixel
+                lR.P = l->position;
+                moveOn = true;
+            }
 
-        glm::vec3 l_dir = glm::normalize(lR.P - lR.E);
-        double light_dist = glm::length(lR.P - lR.E);
+            glm::vec3 l_dir = glm::normalize(lR.P - lR.E);
+            double light_dist = glm::length(lR.P - lR.E);
 
-        glm::vec3 r = -l_dir + 2 * glm::dot(l_dir, s.n) * s.n;
-        glm::vec3 col = s.mat->get_kd() * glm::dot(l_dir, s.n) * l->colour
-                         + s.mat->get_ks() * pow(glm::dot(r, s.v), s.mat->get_shininess()) * l->colour;
+            glm::vec3 r = -l_dir + 2 * glm::dot(l_dir, s.n) * s.n;
+            glm::vec3 col = s.mat->get_kd() * glm::dot(l_dir, s.n) * l->colour
+                            + s.mat->get_ks() * pow(glm::dot(r, s.v), s.mat->get_shininess()) * l->colour;
 
-        col /= (l->falloff[0] + l->falloff[1] * light_dist + l->falloff[2] * light_dist * light_dist);
+            col /= (l->falloff[0] + l->falloff[1] * light_dist + l->falloff[2] * light_dist * light_dist);
 
-        col[0] = glm::max(col[0], 0.0f);
-        col[1] = glm::max(col[1], 0.0f);
-        col[2] = glm::max(col[2], 0.0f);
+            col[0] = glm::max(col[0], 0.0f);
+            col[1] = glm::max(col[1], 0.0f);
+            col[2] = glm::max(col[2], 0.0f);
 
-        Lout += col;
+            colAccumulator += col;
+
+            if( moveOn ) {
+                Lout += col;
+                break;
+            }
+        }
+        if( !moveOn ) {
+            colAccumulator /= SoftShad;
+            Lout += colAccumulator;
+        }
     }
 
     // Add ambient light
@@ -173,6 +198,8 @@ void makeImage( glm::vec3 **superPoints, Image &image,
         } else if (y < h - 1) {
             globalx = 0;
             globaly++;
+
+            std::cout << std::setprecision(0) << (y* ( (Adaptive == 1)? 100 : 50 ) ) /h << '\r' << std::flush;
         } else {
             mtx.unlock();
             return;
@@ -222,6 +249,8 @@ void adaptiveAA(    Image &aImage, Image &image,
         } else if (y < h - 1) {
             globalx = 0;
             globaly++;
+
+            std::cout << std::setprecision(0) << 50 + (y*50)/h << '\r' << std::flush;
         } else {
             mtx.unlock();
             return;
@@ -253,13 +282,13 @@ void adaptiveAA(    Image &aImage, Image &image,
                 aImage(x, y, 2) = 0;
             }
 
+            // Sample points and take average. Point locations taken from (https://docs.microsoft.com/en-us/windows/desktop/api/d3d11/ne-d3d11-d3d11_standard_multisample_quality_levels)
             glm::vec3 sampledPoints(0);
             if( Adaptive == 2 ) {
                 sampledPoints += castRayTo(x +  4.0f/16, y +  4.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
                 sampledPoints += castRayTo(x + -4.0f/16, y + -4.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
                 sampledPoints /= 2;
             } else if( Adaptive == 4 ) {
-                // Sample 4 points inside pixel (https://docs.microsoft.com/en-us/windows/desktop/api/d3d11/ne-d3d11-d3d11_standard_multisample_quality_levels)
                 sampledPoints += castRayTo(x + -2.0f/16, y + -6.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
                 sampledPoints += castRayTo(x +  6.0f/16, y + -2.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
                 sampledPoints += castRayTo(x + -6.0f/16, y +  2.0f/16, h, w, eye, topLeft, pixelSize, root, lights, ambient);
