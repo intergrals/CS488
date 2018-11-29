@@ -34,7 +34,8 @@ static const bool reflect = true;
 static const bool mthread = true;
 static const bool showAdaptive = false;
 static const uint Adaptive = 16;
-static const uint SoftShad = 64;
+static const uint SoftShad = 16;
+static const uint GlossAmt = 64;
 
 
 class surface {

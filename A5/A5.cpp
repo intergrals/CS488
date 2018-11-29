@@ -24,7 +24,9 @@ void loading( float percent ) {
             std::cout << '-';
         }
     }
-    std::cout << ']' << '\t' << p << '%' << '\r' << std::flush;
+
+    std::cout << ']';
+    std::cout.width(4); std::cout << std::right << p << '%' << '\r' << std::flush;
 }
 
 // Check every node for intersection.
@@ -69,10 +71,11 @@ surface checkIntersect( const SceneNode &node, ray r ) {
  */
 std::random_device rd;
 std::mt19937 mt(rd());
+
 glm::vec3 getColour( surface s, const std::list<Light *> & lights, SceneNode *root, glm::vec3 ambient ) {
     glm::vec3 Lout(0);
-    float distRange = ( SoftShad == 1 )? 0 : 1;
-    std::uniform_real_distribution<double> dist(-distRange, distRange);
+    float distRange = 1;
+    std::uniform_real_distribution<double> dist( -distRange, distRange );
 
     ray lR;
     lR.E = s.intersect_pt;
@@ -81,15 +84,16 @@ glm::vec3 getColour( surface s, const std::list<Light *> & lights, SceneNode *ro
         // Check light ray intersection.
         glm::vec3 colAccumulator(0);
         uint numConts = 0;
-        bool moveOn = false;
+        bool moveOn = ( SoftShad == 1 )? true : false;
         for( int i = 0; i < SoftShad; i++ ) {
-            lR.P = l->position + glm::normalize( glm::vec3( dist(mt), dist(mt), dist(mt) ) );
+            if( moveOn ) lR.P = l->position;
+            else lR.P = l->position + glm::normalize( glm::vec3( dist(mt), dist(mt), dist(mt) ) );
+
             if(checkIntersect(*root, lR).intersected) {
                 numConts++;
                 continue;
             } else if(  numConts == 0 && i > SoftShad/4 ) {
                 // If no shadows are being hit, just move onto the next pixel
-                lR.P = l->position;
                 moveOn = true;
             }
 
@@ -127,7 +131,8 @@ glm::vec3 getColour( surface s, const std::list<Light *> & lights, SceneNode *ro
 
 
 // Get the colour of the reflection cast from a surface. There will only be one reflective iteration.
-glm::vec3 getReflection( glm::vec3 eye, surface s, SceneNode *root, const std::list<Light *> & lights, glm::vec3 ambient ) {
+glm::vec3 getReflection( glm::vec3 surfaceColour, glm::vec3 eye, surface s, SceneNode *root, const std::list<Light *> & lights, glm::vec3 ambient ) {
+    glm::vec3 col;
 
     glm::vec3 cReflect = glm::normalize(eye - s.intersect_pt);
     cReflect = -cReflect + 2 * glm::dot(cReflect, s.n) * s.n;
@@ -140,11 +145,35 @@ glm::vec3 getReflection( glm::vec3 eye, surface s, SceneNode *root, const std::l
 
     // check intersection of reflected intersection
     surface rS = checkIntersect(*root, rR);
+    uint timesInt = 0;
     if (rS.intersected) {
-        return getColour(rS, lights, root, ambient);
+        col = getColour( rS, lights, root, ambient );
+        timesInt++;
     } else {
-        return glm::vec3(-1);
+        col = surfaceColour;
     }
+    if( GlossAmt != 1 ) {
+        std::uniform_real_distribution<double> dist( -1.0f, 1.0f );
+        for( int i = 1; i < GlossAmt; i++ ) {
+            rR.P = ( s.intersect_pt + cReflect * 25 ) + glm::normalize( glm::vec3( dist(mt), dist(mt), dist(mt) ) );
+            rS = checkIntersect(*root, rR);
+            if (rS.intersected) {
+                timesInt++;
+                glm::vec3 temp = getColour( rS, lights, root, ambient );
+                //std::cout << glm::to_string( rS.mat->get_kd() ) << glm::to_string(temp) << std::endl;
+                col += temp;
+            } else {
+                col += surfaceColour;
+            }
+        }
+        if( timesInt == 0 ) return glm::vec3(-1);
+
+        col /= GlossAmt;
+        //std::cout << glm::to_string( col ) << std::endl;
+
+    }
+
+    return col;
 }
 
 // Cast a ray from the eye to a projected x and y point relative to a screen denoted by topLeft.
@@ -169,7 +198,7 @@ glm::vec3 castRayTo(float x, float y,
         // Do reflection
 
         if (reflect && s.mat->get_ks().x != 0 && s.mat->get_ks().y != 0 && s.mat->get_ks().z != 0) {
-            glm::vec3 Lout2 = getReflection(eye, s, root, lights, ambient);
+            glm::vec3 Lout2 = getReflection( Lout, eye, s, root, lights, ambient );
             if (Lout2.x != -1 && Lout2.y != -1 && Lout2.z != -1)
                 Lout = (glm::vec3(1) - s.mat->get_ks()) * Lout + s.mat->get_ks() * Lout2;
         }

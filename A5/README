@@ -25,4 +25,4 @@ November:
 22 - Tidied up code from A4. Worked on reflection a little more. Looks better. Moved some code to methods in order to make use of multithreading.
 26 - Added multithreading. Took a while to implement multithreading for supersampling (bonus A4 objective). Also had trouble finding an optimal way to divide workload between threads.
 27 - Tidied up ray casting code even more. Added adaptive anti-aliasing (1x, 2x, 4x, 8x, 16x). Added multithreading for adaptive anti-aliasing.
-28 - Added soft shadows. Thought it didn't work at first because lights were too far away, so penumbra is tiny. Also had trouble with random number generator because it was generating integers instead of real numbers. Added a loading bar just cuz.
+28 - Added soft shadows. Thought it didn't work at first because lights were too far away, so penumbra is tiny. Also had trouble with random number generator because it was generating integers instead of real numbers. Added a loading bar just cuz. Worked on gloss a little. Have a semi-functional implementation. Still need to do a few more things to make it look right.
