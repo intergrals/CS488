@@ -30,12 +30,14 @@ void A5_Render(
 static const double Epsilon = 0.01;
 static const bool super = false;
 static const bool bound = false;
+static const bool refractMap = false;
 static const bool reflect = true;
 static const bool mthread = true;
 static const bool showAdaptive = false;
-static const uint Adaptive = 16;
+static const uint Adaptive = 2;
 static const uint SoftShad = 16;
-static const uint GlossAmt = 64;
+static const uint GlossAmt = 16;
+static const uint MaxPhotons = 100;		// unofficial value
 
 
 class surface {
@@ -47,11 +49,15 @@ public:
     glm::vec3 n;
     glm::vec3 v;
     PhongMaterial *mat = nullptr;
+
+    double refractiveness;
+    double transparency;
     //glm::mat4 trans;
 };
 
 class ray {
 public:
+	ray( glm::vec3 E, glm::vec3 P ) : E(E), P(P) { origE = E; }
     glm::vec3 origE;                        // Original eye position
     glm::vec3 E;                            // Eye / starting point
     glm::vec3 P;			                // Screen point
@@ -59,4 +65,12 @@ public:
     double tmin = 0;                        // minimum t
     double tmax = INFINITY;                 // maximum t
     glm::mat4 trans = glm::mat4(1.0f);      // transformations applied to ray
+};
+
+class photon {
+public:
+	glm::vec3 pos;							// photon position
+	glm::vec3 n;							// surface normal
+	glm::vec3 dir;							// direction of travel
+	glm::vec3 intensity = glm::vec3(1.0f);	// colour intensity
 };

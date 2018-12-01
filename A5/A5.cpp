@@ -5,9 +5,12 @@
 #include <mutex>
 #include <random>
 #include <iomanip>
+#include <stack>
 
 #include "A5.hpp"
 #include "GeometryNode.hpp"
+
+std::mutex mtx;
 
 
 void loading( float percent ) {
@@ -130,10 +133,65 @@ glm::vec3 getColour( surface s, const std::list<Light *> & lights, SceneNode *ro
 }
 
 
+glm::vec3 refraction( glm::vec3 surfaceColour, glm::vec3 rayDir, surface s, std::stack<double> &rIndexes, const std::list<Light *> & lights, SceneNode *root, glm::vec3 ambient ) {
+    // get refractive indices
+    double n;
+    double nt;
+
+    // Check if normal is facing away. If it is, then flip it.
+    double angle = acos( glm::dot( glm::reflect( rayDir, s.n ), s.n ) );
+    if( angle > glm::half_pi<double>() ) {
+        // case where ray goes out of object
+
+        //std::cout << dot(rayDir, s.n) << " " << acos( glm::dot(rayDir, s.n) ) << std::endl;
+        s.n = -s.n;
+
+        n = rIndexes.top();
+        rIndexes.pop();
+        nt = rIndexes.top();
+
+    } else {
+        // case where ray goes into object
+        n = rIndexes.top();
+        nt = s.refractiveness;
+        rIndexes.push( s.refractiveness );
+    }
+
+    // use refraction formula to get new ray direction
+    glm::vec3 t =   n * ( rayDir - s.n * dot( rayDir, s.n ) ) / nt -
+                    s.n * sqrt( 1 - pow(n, 2 ) * ( 1 - pow( glm::dot(rayDir, s.n), 2 ) ) / pow( nt, 2 ) );
+
+    // check if the new ray intersects any objects
+    ray refR;
+    refR.origE = s.intersect_pt;
+    refR.E = s.intersect_pt;
+    refR.P = refR.E + t;
+    surface refS = checkIntersect( *root, refR );
+
+    // If ray intersects an object with transparency, recursively call function
+    if( refS.intersected && refS.transparency > 0 ) {
+        glm::vec3 nextSurfaceColour = getColour(refS, lights, root, ambient);
+        return (1 - s.transparency) * surfaceColour +
+                s.transparency * refraction( nextSurfaceColour, t, refS, rIndexes, lights, root, ambient );
+    } else if( refS.intersected ) {
+        // If ray intersects an object with no transparency, compute colour and return
+        return getColour(refS, lights, root, ambient);
+    } else {
+        return glm::vec3(0);
+    }
+
+    /*mtx.lock();
+    //std::cout << glm::dot( rayDir, s.n) << std::endl;
+    //std::cout << glm::to_string( s.n ) << std::endl;
+    mtx.unlock();*/
+}
+
+
 // Get the colour of the reflection cast from a surface. There will only be one reflective iteration.
 glm::vec3 getReflection( glm::vec3 surfaceColour, glm::vec3 eye, surface s, SceneNode *root, const std::list<Light *> & lights, glm::vec3 ambient ) {
     glm::vec3 col;
 
+    // Get reflected eye ray
     glm::vec3 cReflect = glm::normalize(eye - s.intersect_pt);
     cReflect = -cReflect + 2 * glm::dot(cReflect, s.n) * s.n;
 
@@ -196,12 +254,52 @@ glm::vec3 castRayTo(float x, float y,
         glm::vec3 Lout = getColour(s, lights, root, ambient);
 
         // Do reflection
-
         if (reflect && s.mat->get_ks().x != 0 && s.mat->get_ks().y != 0 && s.mat->get_ks().z != 0) {
             glm::vec3 Lout2 = getReflection( Lout, eye, s, root, lights, ambient );
             if (Lout2.x != -1 && Lout2.y != -1 && Lout2.z != -1)
                 Lout = (glm::vec3(1) - s.mat->get_ks()) * Lout + s.mat->get_ks() * Lout2;
         }
+
+        // Do refraction
+        if( s.transparency > 0 ) {
+            std::stack<double> rIndexes;
+            rIndexes.push( 1.0 );
+            Lout = refraction(Lout, glm::normalize(R.P - R.E), s, rIndexes, lights, root, ambient);
+        }
+
+        /*for( int i = 0; i < 1; i++ ) {
+            double n = 1;
+            double nt = 1.2;
+            glm::vec3 t = refraction(glm::normalize(R.P - R.E), s, n, nt, root);
+
+            ray refR;
+            refR.origE = s.intersect_pt;
+            refR.E = s.intersect_pt;
+            refR.P = refR.E + t*//* s.intersect_pt + (R.P - R.E)*//*;
+            surface refS = checkIntersect( *root, refR );
+
+            t = refraction( t, refS, nt, n, root );
+
+            mtx.lock();
+            //std::cout << glm::to_string( t );
+            //std::cout << glm::to_string( glm::normalize( R.P - R.E ) ) << std::endl;
+            mtx.unlock();
+
+            refR.E = refS.intersect_pt;
+            refR.origE = refS.intersect_pt;
+            refR.P = refR.E + t*//* refS.intersect_pt + (R.P - R.E)*//*;
+            refS = checkIntersect( *root, refR );
+
+            if( refS.intersected ) {
+                glm::vec3 Lout3 = getColour( refS, lights, root, ambient );
+                if( refractMap ) Lout = glm::vec3(1, 0, 0);
+                else Lout = *//*0.5 * Lout + 0.5 **//* Lout3;
+            } else {
+                if( refractMap ) Lout = glm::vec3(0, 0, 1);
+                else Lout = glm::vec3(0);
+            }
+        }*/
+
         return Lout;
     } else {
         glm::vec3 Lout;
@@ -224,8 +322,40 @@ glm::vec3 castRayTo(float x, float y,
     }
 }
 
+/**************************************** Photon Mapping ***************************************/
+
+// Trace a cast photon until it hits a surface. Then play Russian Roulette.
+void tracePhoton( photon p, surface s, SceneNode *root ) {
+    // TODO: 
+}
+
+// Cast photons from light source & trace until it is absorbed.
+void castPhoton( Light l, SceneNode *root ) {
+    std::uniform_real_distribution<double> dist( -1.0f, 1.0f );
+
+    // Cast photon in random direction from light
+    uint numPhotons = 0;
+    while( numPhotons < MaxPhotons ) {
+        photon p;
+        // generate direction TODO: should it be uniform or not (pixar 51)
+        p.dir = glm::normalize( glm::vec3( dist(mt), dist(mt), dist(mt) ) );
+
+        p.pos = l.position;
+        ray r( p.pos, p.dir );
+        surface s = checkIntersect( *root, r );
+        if( !s.intersected ) continue;
+
+        // TODO: Trace photon
+
+
+        numPhotons++;
+    }
+    // TODO: Scale photon power
+}
+
+/**********************************************************************************************/
+
 // Make the image.
-std::mutex mtx;
 void makeImage( glm::vec3 **superPoints, Image &image,
                 size_t h, size_t w,
                 uint &globalx, uint &globaly,

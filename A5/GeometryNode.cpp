@@ -28,6 +28,14 @@ void GeometryNode::setMaterial( Material *mat )
 	m_material = mat;
 }
 
+void GeometryNode::setRefractiveness( double n ) {
+    refractiveness = n;
+}
+
+void GeometryNode::setTransparency( double n ) {
+	transparency = n;
+}
+
 surface GeometryNode::intersection( ray r ) {
     r.E = glm::vec3( glm::inverse( trans ) * glm::vec4( r.E, 1.0f ) );
     r.P = glm::vec3( glm::inverse( trans ) * glm::vec4( r.P, 1.0f ) );
@@ -40,6 +48,8 @@ surface GeometryNode::intersection( ray r ) {
 	surface s = m_primitive->intersection( r );
 	if( s.intersected ) {
 	    s.mat = ( PhongMaterial * )m_material;
+	    s.transparency = transparency;
+	    s.refractiveness = refractiveness;
 	}
 	//s.trans = hiertrans;
 	s.intersect_pt = glm::vec3( r.trans * glm::vec4( s.intersect_pt, 1.0f ) );

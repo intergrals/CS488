@@ -11,20 +11,29 @@ blue = gr.material({0, 1, 1}, {0.5, 0.5, 0.5}, 25)
 scene_root = gr.node('root')
 --scene_root:rotate('X', 23)
 scene_root:translate(0, 0, -5)
-
+--[[
 p1 = gr.sphere('p1')
 scene_root:add_child(p1)
 p1:set_material(blue)
+p1:translate(0, 0, -10)]]
 
-s1 = gr.cube('s1')
---arc:add_child(s1)
---s1:set_material(mat1)
---s1:scale(1, 2, 1)
---s1:translate(-0.5, -1, -0.5)
+--[[s1 = gr.cube('s1')
+scene_root:add_child(s1)
+s1:set_material(mat1)
+s1:scale(20, 20, 20)
+s1:translate(-10, -10, -50)]]
 
---b1 = gr.nh_box('b1', {-310, -350, 0}, 100)
---scene_root:add_child(b1)
---b1:set_material(mat4)
+s6 = gr.nh_sphere('s6', {0, 0, -20}, 5)
+scene_root:add_child(s6)
+s6:set_material(mat1)
+s6:set_transparency(0.75)
+s6:set_refractiveness(1.33)
+
+b1 = gr.cube('b1')
+scene_root:add_child(b1)
+b1:set_material(mat4)
+b1:scale( 4, 20, 4)
+b1:translate(-2, -10, -26)
 
 -- A small stellated dodecahedron.
 
