@@ -30,14 +30,16 @@ void A5_Render(
 static const double Epsilon = 0.01;
 static const bool super = false;
 static const bool bound = false;
+static const bool ShowPhotonMapping = true;
 static const bool refractMap = false;
 static const bool reflect = true;
 static const bool mthread = true;
 static const bool showAdaptive = false;
-static const uint Adaptive = 2;
-static const uint SoftShad = 16;
-static const uint GlossAmt = 16;
-static const uint MaxPhotons = 100;		// unofficial value
+static const uint Adaptive = 1;
+static const uint SoftShad = 1;
+static const uint GlossAmt = 1;
+static const uint MaxPhotons = 0;
+static const uint ClosestN = 500;
 
 
 class surface {
@@ -50,6 +52,8 @@ public:
     glm::vec3 v;
     PhongMaterial *mat = nullptr;
 
+    bool metallic;
+    double reflectiveness;
     double refractiveness;
     double transparency;
     //glm::mat4 trans;
@@ -57,6 +61,7 @@ public:
 
 class ray {
 public:
+    ray() {}
 	ray( glm::vec3 E, glm::vec3 P ) : E(E), P(P) { origE = E; }
     glm::vec3 origE;                        // Original eye position
     glm::vec3 E;                            // Eye / starting point
@@ -69,8 +74,40 @@ public:
 
 class photon {
 public:
+    bool lost = false;                      // whether the photon has been lost (cast into a space with no intersection)
 	glm::vec3 pos;							// photon position
 	glm::vec3 n;							// surface normal
 	glm::vec3 dir;							// direction of travel
 	glm::vec3 intensity = glm::vec3(1.0f);	// colour intensity
+
+	uint sortIn = 0;
+};
+
+class TreeNode {
+public:
+    // Constructor overload
+    TreeNode() {
+        min = glm::vec3(INFINITY);
+        max = glm::vec3(-INFINITY);
+
+        left = nullptr;
+        right = nullptr;
+    }
+    TreeNode( photon p ) : TreeNode() { TreeNode::p = p; }
+    TreeNode( photon p, char layer ) : TreeNode() {
+        TreeNode::p = p;
+        TreeNode::layer = layer;
+    }
+    // Destructor
+    ~TreeNode() {
+        delete left;
+        delete right;
+    }
+
+    photon p;
+    char layer;
+    glm::vec3 min;
+    glm::vec3 max;
+    TreeNode *left;
+    TreeNode *right;
 };

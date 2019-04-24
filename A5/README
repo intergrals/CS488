@@ -13,7 +13,7 @@ afterwards, the compiled program can be run from the same directory using the co
 - ./A5 ({scene}.lua)
 
 My scene can be rendered by calling:
-- ./A5 sample.lua
+- ./A5 scene.lua
 
 The program was compiled on computer gl16 of MC3007.
 
@@ -28,3 +28,22 @@ November:
 28 - Added soft shadows. Thought it didn't work at first because lights were too far away, so penumbra is tiny. Also had trouble with random number generator because it was generating integers instead of real numbers. Added a loading bar just cuz. Worked on gloss a little. Have a semi-functional implementation. Still need to do a few more things to make it look right.
 29 - Finished working on gloss. Started working on refraction. It's really hard. The implementations from my sources aren't working very well; I'm not sure if I'm having trouble understanding them, or they are omitting detail. I am able to get a hardcoded implementation working (where every object has a refraction index of 1).
 30 - Completed refraction. Used a different source instead and still had to modify the implementation to suit my scenario (notably for when negative numbers turn positive in a sqrt(n^2) scenario. Still took a really long time. Thoroughly read though a pixar paper and a few other sources detailing photon mapping (and kd-trees). Started implementation of first pass. Did not get very far.
+
+December:
+1 - Started working with photon mapping. Implemented Russian Roulette and changing photon intensity when it hits a surface.
+2 - Corrected photon tracing implementation to store photon on action instead of only on absorption. Stored photons in unordered list, and implemented kd-trees to store them in. Attempted working on photon mapping second pass, but colour formulas so not work very well. Implemented metallic reflection. Started putting scene together.
+
+
+
+My objectives are:
+1. Modelling objects
+2. Multithreading
+3. Adaptive anti-aliasing
+4. Soft shadows
+5. Reflection
+6. Refraction
+7. Gloss and metallic reflection
+8. Photon mapping (first pass)
+9. Photon mapping (second pass)
+10. Final Scene
+

@@ -23,7 +23,7 @@ s1:set_material(mat1)
 s1:scale(20, 20, 20)
 s1:translate(-10, -10, -50)]]
 
-s6 = gr.nh_sphere('s6', {0, 0, -20}, 5)
+--[[s6 = gr.nh_sphere('s6', {0, 0, -20}, 5)
 scene_root:add_child(s6)
 s6:set_material(mat1)
 s6:set_transparency(0.75)
@@ -33,9 +33,17 @@ b1 = gr.cube('b1')
 scene_root:add_child(b1)
 b1:set_material(mat4)
 b1:scale( 4, 20, 4)
-b1:translate(-2, -10, -26)
+b1:translate(-2, -10, -26)]]
 
 -- A small stellated dodecahedron.
+
+b_blade = gr.mesh( 'blade', 'buster-test.obj')
+scene_root:add_child(b_blade)
+b_blade:set_material(mat4)
+b_blade:set_metallic(1)
+b_blade:scale(0.2, 0.2, 0.2)
+--b_blade:rotate('z', 90)
+b_blade:translate(0, 0, -3)
 
 --steldodec = gr.mesh( 'dodec', 'smstdodeca.obj' )
 --steldodec:set_material(mat3)

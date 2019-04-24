@@ -35,7 +35,7 @@ s6 = gr.nh_sphere('s6', {0, 0, 100}, 100)
 scene_root:add_child(s6)
 s6:set_material(mat1)
 s6:set_transparency(0.5)
-s6:set_refractiveness(1.2)
+s6:set_refractiveness(1.1)
 
 -- A small stellated dodecahedron.
 

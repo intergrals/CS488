@@ -28,8 +28,14 @@ void GeometryNode::setMaterial( Material *mat )
 	m_material = mat;
 }
 
+void GeometryNode::setMetallic( uint n ) {
+	metallic = n == 1;
+}
 void GeometryNode::setRefractiveness( double n ) {
     refractiveness = n;
+}
+void GeometryNode::setReflectiveness( double n ) {
+    reflectiveness = n;
 }
 
 void GeometryNode::setTransparency( double n ) {
@@ -48,7 +54,9 @@ surface GeometryNode::intersection( ray r ) {
 	surface s = m_primitive->intersection( r );
 	if( s.intersected ) {
 	    s.mat = ( PhongMaterial * )m_material;
+	    s.metallic = metallic;
 	    s.transparency = transparency;
+	    s.reflectiveness = reflectiveness;
 	    s.refractiveness = refractiveness;
 	}
 	//s.trans = hiertrans;

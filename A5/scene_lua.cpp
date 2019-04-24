@@ -423,6 +423,26 @@ int gr_node_set_material_cmd(lua_State* L)
 
 // Set a node's Transparency
 extern "C"
+int gr_node_set_metallic_cmd(lua_State* L)
+{
+    GRLUA_DEBUG_CALL;
+
+    gr_node_ud* selfdata = (gr_node_ud*)luaL_checkudata(L, 1, "gr.node");
+    luaL_argcheck(L, selfdata != 0, 1, "Node expected");
+
+    GeometryNode* self = dynamic_cast<GeometryNode*>(selfdata->node);
+
+    luaL_argcheck(L, self != 0, 1, "Geometry node expected");
+
+    double n = luaL_checknumber(L, 2);
+
+    self->setMetallic( n );
+
+    return 0;
+}
+
+// Set a node's Transparency
+extern "C"
 int gr_node_set_transparency_cmd(lua_State* L)
 {
     GRLUA_DEBUG_CALL;
@@ -437,6 +457,27 @@ int gr_node_set_transparency_cmd(lua_State* L)
     double n = luaL_checknumber(L, 2);
 
     self->setTransparency( n );
+
+    return 0;
+}
+
+
+// Set a node's Refractiveness
+extern "C"
+int gr_node_set_reflectiveness_cmd(lua_State* L)
+{
+    GRLUA_DEBUG_CALL;
+
+    gr_node_ud* selfdata = (gr_node_ud*)luaL_checkudata(L, 1, "gr.node");
+    luaL_argcheck(L, selfdata != 0, 1, "Node expected");
+
+    GeometryNode* self = dynamic_cast<GeometryNode*>(selfdata->node);
+
+    luaL_argcheck(L, self != 0, 1, "Geometry node expected");
+
+    double n = luaL_checknumber(L, 2);
+
+    self->setReflectiveness( n );
 
     return 0;
 }
@@ -586,7 +627,9 @@ static const luaL_Reg grlib_node_methods[] = {
   {"__gc", gr_node_gc_cmd},
   {"add_child", gr_node_add_child_cmd},
   {"set_material", gr_node_set_material_cmd},
+  {"set_metallic", gr_node_set_metallic_cmd},
   {"set_transparency", gr_node_set_transparency_cmd},
+  {"set_reflectiveness", gr_node_set_reflectiveness_cmd},
   {"set_refractiveness", gr_node_set_refractiveness_cmd},
   {"scale", gr_node_scale_cmd},
   {"rotate", gr_node_rotate_cmd},
